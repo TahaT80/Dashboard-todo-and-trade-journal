@@ -114,6 +114,8 @@ async function initDB() {
     )
   `);
   try { db.prepare(`ALTER TABLE trades ADD COLUMN date TEXT`).run(); } catch(e) {}
+  try { db.prepare(`ALTER TABLE trades ADD COLUMN leverage INTEGER DEFAULT 1`).run(); } catch(e) {}
+  try { db.prepare(`ALTER TABLE trades ADD COLUMN rawpnl REAL DEFAULT 0`).run(); } catch(e) {}
   saveDB();
 }
 
@@ -224,9 +226,9 @@ app.get('/api/trades', authMiddleware, (req, res) => {
 
 app.post('/api/trades', authMiddleware, (req, res) => {
   const t = req.body;
-  dbRun(`INSERT INTO trades (user_id, coin, dir, entry, sl, tp, exit_price, size, result, setup, tf, session, note, tvlink, ss, pnl, rr, date)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [req.userId, t.coin, t.dir, t.entry, t.sl, t.tp, t.exit, t.size, t.result, t.setup, t.tf, t.session, t.note, t.tvlink, t.ss, t.pnl, t.rr, t.date || null]);
+  dbRun(`INSERT INTO trades (user_id, coin, dir, entry, sl, tp, exit_price, size, leverage, result, setup, tf, session, note, tvlink, ss, pnl, rawpnl, rr, date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [req.userId, t.coin, t.dir, t.entry, t.sl, t.tp, t.exit, t.size, t.leverage||1, t.result, t.setup, t.tf, t.session, t.note, t.tvlink, t.ss, t.pnl, t.rawpnl||0, t.rr, t.date || null]);
   res.json({ id: getLastInsertId() });
 });
 

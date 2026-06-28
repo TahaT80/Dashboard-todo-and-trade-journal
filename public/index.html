@@ -678,13 +678,12 @@ select.ti option{background:var(--s3);}
               <input class="ti" id="t-tp" placeholder="Take Profit" type="number">
               <input class="ti" id="t-exit" placeholder="خروج واقعی" type="number">
             </div>
-            <div class="tf-row tf-row-2">
-              <input class="ti" id="t-date" type="datetime-local">
-              <input class="ti" id="t-size" placeholder="حجم (درصد پورتفولیو)" type="number" min="0" max="100" step="0.1">
-            </div>
-            <div class="tf-row tf-row-2">
+            <div class="tf-row tf-row-4">
+              <input class="ti" id="t-size" placeholder="حجم (٪ پورتفولیو)" type="number" min="0" max="100" step="0.1">
+              <input class="ti" id="t-lev" placeholder="ضریب (1x)" type="number" min="1" max="500" step="1">
               <select class="ti" id="t-result"><option value="win">✅ برنده</option><option value="loss">❌ بازنده</option><option value="be">🟠 سر به سر</option></select>
-              <input class="ti" id="t-setup" placeholder="ستاپ (Order Block + FVG + BOS)"></div>
+              <input class="ti" id="t-setup" placeholder="ستاپ (OB + FVG + BOS)"></div>
+            <div class="tf-row" style="grid-template-columns:1fr"><input class="ti" id="t-date" type="datetime-local"></div>
             <div class="tv-link-wrap"><input class="ti" id="t-tvlink" placeholder="🔗 لینک TradingView"></div>
             <div class="ss-drop" id="ss-drop">
               <input type="file" accept="image/*" id="ss-input" onchange="handleSS(event)">
@@ -1321,6 +1320,7 @@ async function addTrade(){
   const tp=parseFloat(document.getElementById('t-tp').value);
   const exit=parseFloat(document.getElementById('t-exit').value);
   const size=parseFloat(document.getElementById('t-size').value)||0;
+  const leverage=parseInt(document.getElementById('t-lev').value)||1;
   const result=document.getElementById('t-result').value;
   const setup=document.getElementById('t-setup').value.trim();
   const tf=document.getElementById('t-tf').value.trim();
@@ -1331,17 +1331,17 @@ async function addTrade(){
   const tradeDate=dateInput?new Date(dateInput).toISOString():new Date().toISOString();
   if(!coin||!entry){toast('⚠️ حداقل نماد و قیمت ورود','warning');return}
   const rawPnl=exit?((tradeDir==='long'?(exit-entry)/entry*100:(entry-exit)/entry*100)):0;
-  const pnl=(rawPnl*(size/100)).toFixed(2);
+  const pnl=(rawPnl*leverage*(size/100)).toFixed(2);
   const risk=Math.abs(entry-sl);
   const reward=Math.abs(tp-entry);
   const rr=(risk>0&&reward>0)?(reward/risk).toFixed(1):'—';
-  const trade={coin,dir:tradeDir,entry,sl,tp,exit:exit||0,size:size||0,result,setup,tf,session,note,tvlink,ss:pendingSS,pnl:parseFloat(pnl),rr,date:tradeDate};
+  const trade={coin,dir:tradeDir,entry,sl,tp,exit:exit||0,size:size||0,leverage,result,setup,tf,session,note,tvlink,ss:pendingSS,pnl:parseFloat(pnl),rawpnl:parseFloat(rawPnl.toFixed(2)),rr,date:tradeDate};
   try{
     const res=await api('/api/trades',{method:'POST',body:JSON.stringify(trade)});
     trade.id=res.id;
     trade.created_at=tradeDate;
     localCache['_trades']=[trade,...(localCache['_trades']||[])];
-    ['t-coin','t-entry','t-sl','t-tp','t-exit','t-size','t-setup','t-tf','t-note','t-tvlink'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+    ['t-coin','t-entry','t-sl','t-tp','t-exit','t-size','t-lev','t-setup','t-tf','t-note','t-tvlink'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
     clearSS({preventDefault:()=>{},stopPropagation:()=>{}});
     document.getElementById('t-date').value=new Date().toISOString().slice(0,16);
     toast((result==='win'?'✅':result==='be'?'🟡':'❌')+' '+coin+' ثبت شد — PnL: '+pnl+'%',result==='win'?'success':result==='loss'?'error':'warning');
@@ -1355,7 +1355,7 @@ async function loadTrades(){try{const trades=await api('/api/trades');localCache
 function renderTrade(){loadTrades().then(()=>{renderTradeDaySel();renderTradeList();renderTradeStats_small();const di=document.getElementById('t-date');if(di&&!di.value)di.value=new Date().toISOString().slice(0,16)})}
 function renderTradeDaySel(){const days=weekDays(WO);document.getElementById('trade-day-sel').innerHTML=days.map((d,i)=>'<button style="padding:4px 9px;border-radius:6px;border:1px solid var(--bd);background:var(--s2);color:var(--muted);font-family:Vazirmatn,sans-serif;font-size:11px;cursor:pointer">'+DAYS_SH[i]+' '+d.getDate()+'</button>').join('')}
 
-function renderTradeList(){const filter=document.getElementById('tfilter')?.value||'all';let trades=getTrades();if(filter!=='all')trades=trades.filter(t=>t.result===filter);const el=document.getElementById('trade-list-wrap');if(!el)return;if(!trades.length){el.innerHTML='<div class="no-trades"><span class="nt-icon">📊</span>هنوز معامله‌ای ثبت نشده<div class="nt-sub">فرم بالا رو پر کن و اولین معاملت رو ثبت کن</div></div>';return}el.innerHTML=trades.map(t=>{const pl=t.pnl>=0;const exitVal=t.exit_price||t.exit||0;const tDate=new Date(t.date||t.created_at);const dateStr=tDate.toLocaleDateString('fa-IR');const timeStr=tDate.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});return'<div class="titem" id="ti-'+t.id+'"><div class="titem-row" onclick="togTItem('+t.id+')"><span class="titem-coin">'+t.coin+'</span><span class="titem-dir '+(t.dir==='long'?'tdir-long':'tdir-short')+'">'+(t.dir==='long'?'Long ↑':'Short ↓')+'</span><span class="titem-entry">'+t.entry+(exitVal?' → '+exitVal:'')+'</span><span class="titem-pnl" style="color:'+(pl?'var(--green)':'var(--red)')+'">'+(pl?'+':'')+t.pnl+'%</span><span class="titem-rr">RR '+t.rr+'</span><span style="font-size:16px">'+(t.result==='win'?'✅':t.result==='loss'?'❌':'🟡')+'</span><button class="titem-del" onclick="event.stopPropagation();confirmDelTrade('+t.id+')">✕</button></div><div class="titem-expand" id="te-'+t.id+'">'+(t.ss?'<img src="'+t.ss+'" class="titem-ss" onclick="openLB(\''+t.ss+'\')" title="بزرگ نمایی">':'')+(t.tvlink?'<a href="'+t.tvlink+'" target="_blank" style="font-size:11px;color:var(--blue);display:block;margin-bottom:8px">🔗 TradingView</a>':'')+(t.setup||t.note?'<div class="titem-note">'+(t.setup?'<strong>ستاپ:</strong> '+t.setup+'<br>':'')+(t.note?t.note:'')+'</div>':'')+'<div class="titem-tags">'+(t.tf?'<span class="titem-tag">⏱ '+t.tf+'</span>':'')+(t.session?'<span class="titem-tag">🌍 '+(t.session==='eu'?'اروپا':t.session==='us'?'آمریکا':'آسیا')+'</span>':'')+(t.size?'<span class="titem-tag">📊 '+t.size+'%</span>':'')+(t.sl?'<span class="titem-tag">🛑 SL: '+t.sl+'</span>':'')+(t.tp?'<span class="titem-tag">🎯 TP: '+t.tp+'</span>':'')+'<span class="titem-tag" style="direction:ltr">'+dateStr+' '+timeStr+'</span></div></div></div>'}).join('')}
+function renderTradeList(){const filter=document.getElementById('tfilter')?.value||'all';let trades=getTrades();if(filter!=='all')trades=trades.filter(t=>t.result===filter);const el=document.getElementById('trade-list-wrap');if(!el)return;if(!trades.length){el.innerHTML='<div class="no-trades"><span class="nt-icon">📊</span>هنوز معامله‌ای ثبت نشده<div class="nt-sub">فرم بالا رو پر کن و اولین معاملت رو ثبت کن</div></div>';return}el.innerHTML=trades.map(t=>{const pl=t.pnl>=0;const exitVal=t.exit_price||t.exit||0;const tDate=new Date(t.date||t.created_at);const dateStr=tDate.toLocaleDateString('fa-IR');const timeStr=tDate.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});const rp=t.rawpnl!=null?t.rawpnl:(t.pnl||0);const rpCol=rp>=0?'var(--green)':'var(--red)';const lev=t.leverage||1;return'<div class="titem" id="ti-'+t.id+'"><div class="titem-row" onclick="togTItem('+t.id+')"><span class="titem-coin">'+t.coin+'</span><span class="titem-dir '+(t.dir==='long'?'tdir-long':'tdir-short')+'">'+(t.dir==='long'?'Long ↑':'Short ↓')+'</span><span class="titem-entry">'+t.entry+(exitVal?' → '+exitVal:'')+'</span><span class="titem-rr">RR '+t.rr+'</span><span class="titem-pnl" style="color:'+rpCol+'">'+(rp>=0?'+':'')+rp+'%</span>'+(lev>1?'<span class="titem-tag" style="background:rgba(249,115,22,.12);color:var(--orange);padding:2px 6px;border-radius:4px;font-size:10px">'+lev+'x</span>':'')+'<span class="titem-pnl" style="color:'+(pl?'var(--green)':'var(--red)')+';font-size:11px;opacity:.7">('+t.pnl+'%)</span><span style="font-size:16px">'+(t.result==='win'?'✅':t.result==='loss'?'❌':'🟠')+'</span><button class="titem-del" onclick="event.stopPropagation();confirmDelTrade('+t.id+')">✕</button></div><div class="titem-expand" id="te-'+t.id+'">'+(t.ss?'<img src="'+t.ss+'" class="titem-ss" onclick="openLB(''+t.ss+'')" title="بزرگ نمایی">':'')+(t.tvlink?'<a href="'+t.tvlink+'" target="_blank" style="font-size:11px;color:var(--blue);display:block;margin-bottom:8px">🔗 TradingView</a>':'')+(t.setup||t.note?'<div class="titem-note">'+(t.setup?'<strong>ستاپ:</strong> '+t.setup+'<br>':'')+(t.note?t.note:'')+'</div>':'')+'<div class="titem-tags">'+(t.tf?'<span class="titem-tag">⏱ '+t.tf+'</span>':'')+(t.session?'<span class="titem-tag">🌍 '+(t.session==='eu'?'اروپا':t.session==='us'?'آمریکا':'آسیا')+'</span>':'')+(t.size?'<span class="titem-tag">📊 '+t.size+'%</span>':'')+(lev>1?'<span class="titem-tag">⚡ '+lev+'x</span>':'')+(t.sl?'<span class="titem-tag">🛑 SL: '+t.sl+'</span>':'')+(t.tp?'<span class="titem-tag">🎯 TP: '+t.tp+'</span>':'')+'<span class="titem-tag" style="direction:ltr">'+dateStr+' '+timeStr+'</span></div></div></div>'}).join('')}
 
 function togTItem(id){document.getElementById('ti-'+id).classList.toggle('open')}
 let pendingDelId=null;
