@@ -113,7 +113,7 @@ async function initDB() {
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
-  db.run(`ALTER TABLE trades ADD COLUMN date TEXT`).catch(()=>{});
+  try { db.prepare(`ALTER TABLE trades ADD COLUMN date TEXT`).run(); } catch(e) {}
   saveDB();
 }
 
