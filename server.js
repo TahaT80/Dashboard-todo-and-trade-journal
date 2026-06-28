@@ -113,6 +113,7 @@ async function initDB() {
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
+  db.run(`ALTER TABLE trades ADD COLUMN date TEXT`).catch(()=>{});
   saveDB();
 }
 
@@ -223,9 +224,9 @@ app.get('/api/trades', authMiddleware, (req, res) => {
 
 app.post('/api/trades', authMiddleware, (req, res) => {
   const t = req.body;
-  dbRun(`INSERT INTO trades (user_id, coin, dir, entry, sl, tp, exit_price, size, result, setup, tf, session, note, tvlink, ss, pnl, rr)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [req.userId, t.coin, t.dir, t.entry, t.sl, t.tp, t.exit, t.size, t.result, t.setup, t.tf, t.session, t.note, t.tvlink, t.ss, t.pnl, t.rr]);
+  dbRun(`INSERT INTO trades (user_id, coin, dir, entry, sl, tp, exit_price, size, result, setup, tf, session, note, tvlink, ss, pnl, rr, date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [req.userId, t.coin, t.dir, t.entry, t.sl, t.tp, t.exit, t.size, t.result, t.setup, t.tf, t.session, t.note, t.tvlink, t.ss, t.pnl, t.rr, t.date || null]);
   res.json({ id: getLastInsertId() });
 });
 
