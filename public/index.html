@@ -186,9 +186,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .tclbl{font-size:12px;font-weight:500;line-height:1.2;}
 .tc-rest-btn{font-size:10px;color:var(--muted);border:1px dashed var(--dim);border-radius:6px;padding:4px 6px;margin-top:2px;cursor:pointer;text-align:center;transition:all .2s;}
 .tc-rest-btn:hover{border-color:var(--bd2);color:var(--text);}
-.bchart{display:flex;align-items:flex-end;gap:5px;height:90px;}
-.bg-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
-.bg-wrap{width:100%;flex:1;display:flex;align-items:flex-end;justify-content:center;}
+.bchart{display:flex;align-items:flex-end;gap:5px;height:120px;padding-top:6px;}
+.bg-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;}
+.bg-pct{font-size:10px;color:var(--muted);line-height:1;}
+.bg-wrap{width:100%;flex:1;display:flex;align-items:flex-end;justify-content:center;min-height:0;}
 .bg-bar{width:100%;border-radius:4px 4px 0 0;min-height:3px;transition:height .6s cubic-bezier(.34,1.56,.64,1);position:relative;cursor:pointer;}
 .bg-bar::after{content:attr(data-v);position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;background:var(--s3);padding:2px 5px;border-radius:4px;white-space:nowrap;opacity:0;transition:opacity .2s;}
 .bg-bar:hover::after{opacity:1;}
@@ -209,6 +210,18 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .stk-dots{display:flex;gap:3px;justify-content:center;margin-top:8px;}
 .sdot{width:7px;height:7px;border-radius:50%;background:var(--dim);}
 .sdot.on{background:var(--sc);box-shadow:0 0 5px var(--sc);}
+
+/* MONTHLY CALENDAR */
+.m-cal-head{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px;}
+.m-cal-head>div{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:4px;}
+.m-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.m-cal-cell{border:1px solid var(--bd);border-radius:8px;padding:6px 4px;text-align:center;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:default;transition:transform .15s;}
+.m-cal-cell:hover{transform:scale(1.05);}
+.m-cal-cell.empty{border-color:transparent;background:transparent!important;}
+.m-cal-cell.today{box-shadow:0 0 0 2px var(--gold);}
+.m-cal-d{font-size:14px;font-weight:700;line-height:1;}
+.m-cal-i{font-size:10px;font-weight:700;opacity:.85;}
+@media(max-width:700px){.m-cal-d{font-size:11px}.m-cal-i{font-size:9px}.m-cal-cell{padding:3px 2px}}
 
 /* SCHEDULE */
 .sched-wrap{display:grid;grid-template-columns:200px 1fr;gap:16px;}
@@ -388,9 +401,15 @@ select.ti option{background:var(--s3);}
 .wr-val{font-size:14px;font-weight:700;}
 .eq-chart{height:80px;position:relative;}
 .eq-svg{width:100%;height:100%;}
-.hmap{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
-.hmap-cell{aspect-ratio:1;border-radius:3px;cursor:pointer;transition:transform .1s;}
-.hmap-cell:hover{transform:scale(1.3);}
+.hmap{display:block;}
+.hmap-wrap{display:flex;gap:4px;align-items:flex-start;}
+.hmap-days{display:flex;flex-direction:column;gap:3px;padding-top:0;}
+.hmap-days>div{font-size:9px;color:var(--muted);height:14px;display:flex;align-items:center;font-weight:700;}
+.hmap-cols{display:flex;gap:3px;flex:1;overflow-x:auto;}
+.hmap-col{display:flex;flex-direction:column;gap:3px;}
+.hmap-cell{width:14px;height:14px;border-radius:3px;cursor:pointer;transition:transform .1s;flex-shrink:0;}
+.hmap-cell.empty{background:transparent!important;}
+.hmap-cell:hover{transform:scale(1.4);}
 .sess-bars{display:flex;flex-direction:column;gap:8px;}
 .sess-row{display:flex;align-items:center;gap:8px;}
 .sess-name{font-size:12px;color:var(--muted);width:60px;flex-shrink:0;}
@@ -479,7 +498,7 @@ select.ti option{background:var(--s3);}
   .nut-hero{padding:16px;}
   .nut-goal-row{gap:12px;}
   .sched-wrap{gap:10px;}
-  .bchart{height:70px;}
+  .bchart{height:100px;}
 }
 </style>
 </head>
@@ -529,7 +548,6 @@ select.ti option{background:var(--s3);}
     <button class="ntab on" onclick="nav('overview',this)">📊 نمای کلی</button>
     <button class="ntab" onclick="nav('schedule',this)">📅 برنامه</button>
     <button class="ntab" onclick="nav('nutrition',this)">🥗 تغذیه</button>
-    <button class="ntab" onclick="nav('journal',this)">📝 ژورنال</button>
     <button class="ntab" onclick="nav('trade',this)">📈 ترید</button>
   </div>
   <div class="nav-right">
@@ -570,7 +588,6 @@ select.ti option{background:var(--s3);}
     <button class="mobile-ntab on" onclick="navMobile('overview',this)">📊 نمای کلی</button>
     <button class="mobile-ntab" onclick="navMobile('schedule',this)">📅 برنامه</button>
     <button class="mobile-ntab" onclick="navMobile('nutrition',this)">🥗 تغذیه</button>
-    <button class="mobile-ntab" onclick="navMobile('journal',this)">📝 ژورنال</button>
     <button class="mobile-ntab" onclick="navMobile('trade',this)">📈 ترید</button>
   </div>
   <div class="mobile-menu-footer">
@@ -604,6 +621,8 @@ select.ti option{background:var(--s3);}
   </div>
   <div class="sh afu" style="animation-delay:.2s"><h2>🔥 استریک‌ها</h2><div class="line"></div><button class="edit-btn" onclick="editStreaks()" title="ویرایش">✏️</button></div>
   <div class="card afu" style="animation-delay:.22s"><div class="card-body"><div class="stk-grid" id="stk-grid"></div></div></div>
+  <div class="sh afu" style="animation-delay:.26s;margin-top:24px"><h2>📆 ردیابی ماهانه</h2><div class="line"></div><span class="pill" style="color:var(--purple);border-color:rgba(167,139,250,.3)">MONTHLY</span></div>
+  <div class="card afu" style="animation-delay:.28s"><div class="card-body" id="monthly-tracking"></div></div>
 </div>
 </div>
 
@@ -644,16 +663,6 @@ select.ti option{background:var(--s3);}
 </div>
 </div>
 
-<!-- PAGE: JOURNAL -->
-<div class="page" id="pg-journal">
-<div class="wrap">
-  <div class="j-layout">
-    <div class="j-sidebar"><div class="j-day-list" id="j-day-list"></div></div>
-    <div class="j-main afu" id="j-main"></div>
-  </div>
-</div>
-</div>
-
 <!-- PAGE: TRADE -->
 <div class="page" id="pg-trade">
 <div class="wrap">
@@ -665,8 +674,16 @@ select.ti option{background:var(--s3);}
     <div class="tj-layout">
       <div>
         <div class="trade-form afu">
-          <div class="tf-head"><h3>➕ معامله جدید</h3><div id="trade-day-sel" style="display:flex;gap:4px;flex-wrap:wrap"></div></div>
+          <div class="tf-head"><h3>➕ معامله جدید</h3><div id="trade-day-sel" style="display:flex;gap:4px;flex-wrap:wrap;align-items:center"></div></div>
           <div class="tf-body">
+            <div class="tf-row" style="grid-template-columns:auto 1fr;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:8px 10px">
+              <label style="font-size:12px;color:var(--muted);white-space:nowrap">📅 تاریخ و ساعت:</label>
+              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                <input class="ti" id="t-datetime" type="datetime-local" style="flex:1;min-width:180px" oninput="updateTradeDateShamsi()">
+                <button type="button" onclick="setTradeDateNow()" style="padding:7px 12px;border-radius:6px;border:1px solid var(--bd);background:var(--s3);color:var(--text);font-family:inherit;font-size:11px;cursor:pointer" title="الان">🕒 الان</button>
+                <span id="t-datetime-shamsi" style="font-size:11px;color:var(--gold);font-weight:600"></span>
+              </div>
+            </div>
             <div class="tf-row tf-row-4">
               <input class="ti" id="t-coin" placeholder="نماد (BTC)">
               <div><div class="dir-btns"><button class="dir-btn long" id="btn-long" onclick="setDir('long')">Long ↑</button><button class="dir-btn short" id="btn-short" onclick="setDir('short')">Short ↓</button></div></div>
@@ -679,8 +696,9 @@ select.ti option{background:var(--s3);}
               <input class="ti" id="t-tp" placeholder="Take Profit" type="number">
               <input class="ti" id="t-exit" placeholder="خروج واقعی" type="number">
             </div>
-            <div class="tf-row tf-row-2">
-              <input class="ti" id="t-size" placeholder="حجم (درصد پورتفولیو)">
+            <div class="tf-row tf-row-3">
+              <input class="ti" id="t-size" placeholder="مقدار ($)" type="number">
+              <input class="ti" id="t-leverage" placeholder="ضریب (1-125)" type="number" min="1" max="125" value="1">
               <select class="ti" id="t-result"><option value="win">✅ برنده</option><option value="loss">❌ بازنده</option><option value="be">🟠 سر به سر</option></select>
             </div>
             <div class="tf-row" style="grid-template-columns:1fr"><input class="ti" id="t-setup" placeholder="ستاپ (Order Block + FVG + BOS)"></div>
@@ -852,6 +870,19 @@ select.ti option{background:var(--s3);}
   </div>
 </div>
 
+<!-- EDIT DONUT CATEGORIES MODAL -->
+<div class="edit-modal" id="edit-donut-modal">
+  <div class="edit-modal-content" style="max-height:85vh;overflow-y:auto">
+    <h3>🎯 ویرایش دسته‌های توزیع فعالیت</h3>
+    <div id="donut-cats-list"></div>
+    <button class="le-add" onclick="addDonutCat()" style="margin-top:12px">+ دسته جدید</button>
+    <div class="edit-modal-btns" style="margin-top:16px">
+      <button class="modal-btn cancel" onclick="closeEditModal('edit-donut-modal')">انصراف</button>
+      <button class="edit-save-btn" onclick="saveDonutCats()" style="flex:1;padding:10px;border-radius:8px;font-size:13px">💾 ذخیره</button>
+    </div>
+  </div>
+</div>
+
 <!-- LIGHTBOX -->
 <div class="lb" id="lb" onclick="closeLB()">
   <button class="lb-close" onclick="closeLB()">✕</button>
@@ -1001,9 +1032,9 @@ function navMobile(id,btn){
   document.getElementById('pg-'+id).classList.add('on');
   btn.classList.add('on');
   const ntabs=document.querySelectorAll('.ntab');
-  const idx=['overview','schedule','nutrition','journal','trade'].indexOf(id);
+  const idx=['overview','schedule','nutrition','trade'].indexOf(id);
   if(idx>=0&&ntabs[idx])ntabs[idx].classList.add('on');
-  const fns={overview:renderOverview,schedule:renderSchedule,nutrition:renderNutrition,journal:renderJournal,trade:renderTrade};
+  const fns={overview:renderOverview,schedule:renderSchedule,nutrition:renderNutrition,trade:renderTrade};
   fns[id]&&fns[id]();
   closeMobileMenu();
 }
@@ -1166,14 +1197,14 @@ function exportJSON(){
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tahaeth-backup-'+new Date().toISOString().split('T')[0]+'.json';a.click();URL.revokeObjectURL(url);toast('📄 بکاپ خروج شد','success');closeUserMenu();closeMobileMenu()
 }
-function exportCSV(){const trades=getTrades();if(!trades.length){toast('⚠️ معامله‌ای ثبت نشده','warning');return}const h=['تاریخ','نماد','جهت','ورود','خروج','PnL%','RR','ستاپ','تایم‌فریم','سشن','نتیجه'];const rows=trades.map(t=>[new Date(t.date||t.created_at).toLocaleDateString('fa-IR'),t.coin,t.dir==='long'?'Long':'Short',t.entry,t.exit_price||t.exit,t.pnl,t.rr,t.setup,t.tf,t.session,t.result==='win'?'برنده':t.result==='loss'?'بازنده':'سر به سر']);const csv=[h,...rows].map(r=>r.join(',')).join('\n');const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tahaeth-trades-'+new Date().toISOString().split('T')[0]+'.csv';a.click();URL.revokeObjectURL(url);toast('📊 خروجی CSV خروج شد','success');closeUserMenu();closeMobileMenu()}
+function exportCSV(){const trades=getTrades();if(!trades.length){toast('⚠️ معامله‌ای ثبت نشده','warning');return}const h=['تاریخ','نماد','جهت','ورود','خروج','PnL$','RR','ستاپ','تایم‌فریم','سشن','نتیجه'];const rows=trades.map(t=>[new Date(t.date||t.created_at).toLocaleDateString('fa-IR'),t.coin,t.dir==='long'?'Long':'Short',t.entry,t.exit_price||t.exit,(t.rawpnl||0).toFixed(2),t.rr,t.setup,t.tf,t.session,t.result==='win'?'برنده':t.result==='loss'?'بازنده':'سر به سر']);const csv=[h,...rows].map(r=>r.join(',')).join('\n');const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tahaeth-trades-'+new Date().toISOString().split('T')[0]+'.csv';a.click();URL.revokeObjectURL(url);toast('📊 خروجی CSV خروج شد','success');closeUserMenu();closeMobileMenu()}
 
 // QUOTES
 const QUOTES=[{t:'انضباط یعنی انجام دادن کاری که باید انجام بدی، حتی حوصله‌شو نداری.',a:'جیم ران'},{t:'موفقیت یک عادت روزانه‌ست، نه یک اتفاق یهویی.',a:'نامعلوم'},{t:'هر روز 1% بهتر شو، بعد از یک سال 37 برابر بهتر خواهی بود.',a:'جیمز کلیر'},{t:'ترید بدون جنایت = استراحت + صبر + نظم.',a:'تاهآ'},{t:'بدن قوی = ذهن قوی‌تر = ترید بهتر = عضله بهتر.',a:'تاهآ'},{t:'ترید خوب = تریدی که طبق خودت باشه.',a:'تاهآ'},{t:'ستاپ خوب = ترید سودآور.',a:'تاهآ'},{t:'نظم صف روزانه = ترید بهتر',a:'تاهآ'},{t:'ریسک در آینده = ریسک در دسترس است.',a:'تاهآ'},{t:'بی‌خود ریسک نکن.',a:'تاهآ'},{t:'از اشتباهاتت فرار نکن، باهاشون روبرو شو.',a:'تاهآ'},{t:'صبر کن، زمان سرمایه‌گذار است.',a:'نامعلوم'},{t:'ترید خوب = انضباط مالی بالا.',a:'تاهآ'},{t:'اجمال کسب و ترید هر دو به یک چیز نیاز دارن: صبر.',a:'وارن بافت'},{t:'بهترین نتیجه را در هر مسیری جستجو کن.',a:'تاهآ'},{t:'خواب کافی = تمرکز بالا = ترید بهتر.',a:'تاهآ'},{t:'هر روز فرزانه یک قدر یافته.',a:'تاهآ'}];
 function renderQuote(){const idx=Math.floor(Date.now()/86400000)%QUOTES.length;const q=QUOTES[idx];document.getElementById('quote-card').innerHTML='<div class="quote-text">'+q.t+'</div><div class="quote-author">— '+q.a+'</div>';}
 
 // NAV
-function nav(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));document.getElementById('pg-'+id).classList.add('on');btn.classList.add('on');const fns={overview:renderOverview,schedule:renderSchedule,nutrition:renderNutrition,journal:renderJournal,trade:renderTrade};fns[id]&&fns[id]()}
+function nav(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));document.getElementById('pg-'+id).classList.add('on');btn.classList.add('on');const fns={overview:renderOverview,schedule:renderSchedule,nutrition:renderNutrition,trade:renderTrade};fns[id]&&fns[id]()}
 function tradePTab(id,btn){document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');document.getElementById('trade-log-page').style.display=id==='log'?'block':'none';document.getElementById('trade-stats-page').style.display=id==='stats'?'block':'none';if(id==='stats')renderTradeStats()}
 (()=>{const d=new Date();document.getElementById('nav-date').textContent=d.toLocaleDateString('fa-IR',{weekday:'short',month:'short',day:'numeric'})})();
 
@@ -1197,6 +1228,9 @@ const getDone=(w,d)=>ld(wKey(w,d,'_t'),[]);
 const setDone=(w,d,id,v)=>{let a=getDone(w,d);v?(!a.includes(id)&&a.push(id)):(a=a.filter(x=>x!==id));sv(wKey(w,d,'_t'),a)};
 const isRest=(w,d)=>ld(wKey(w,d,'_rest'),false);
 const setRest=(w,d,v)=>sv(wKey(w,d,'_rest'),v);
+// Get done/rest by an arbitrary calendar date
+function getDoneByDate(dt){const d=new Date(dt);d.setHours(0,0,0,0);const wd=(d.getDay()+1)%7;const start=new Date(d);start.setDate(d.getDate()-wd);return ld('w_'+start.toISOString().split('T')[0]+'_d'+wd+'_t',[])}
+function isRestByDate(dt){const d=new Date(dt);d.setHours(0,0,0,0);const wd=(d.getDay()+1)%7;const start=new Date(d);start.setDate(d.getDate()-wd);return ld('w_'+start.toISOString().split('T')[0]+'_d'+wd+'_rest',false)}
 const getNote=(w,d)=>ld(wKey(w,d,'_note'),{mood:'',text:'',checks:[]});
 const saveNote=(w,d,v)=>sv(wKey(w,d,'_note'),v);
 let WO=0,selSched=null,selJ=0,tradeDir='long',pendingSS=null;
@@ -1246,15 +1280,57 @@ function closeListEditor(save){
   m.classList.remove('on');
   _listEditorCb=null;
 }
-function editDonutCats(){const cats=getDonutCats();const items=cats.map(c=>c.l+'|'+c.c+'|'+c.t.join(','));openListEditor('ویرایش دسته‌های توزیع فعالیت',items,(vals)=>{const newCats=vals.map((v,i)=>{const parts=v.split('|');return{id:'cat'+i,l:parts[0]||'?',c:parts[1]||'#888',t:(parts[2]||'').split(',').map(s=>s.trim()).filter(Boolean)}});sv('_customDonutCats',newCats);renderDonut()})}
+function editDonutCats(){
+  const cats=getDonutCats();
+  const blocks=getBlocks();
+  let editingCats=JSON.parse(JSON.stringify(cats));
+  function render(){
+    const el=document.getElementById('donut-cats-list');
+    el.innerHTML=editingCats.map((c,i)=>'<div style="background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:10px"><div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><input class="ti" value="'+c.l.replace(/"/g,'&quot;')+'" placeholder="نام دسته" style="flex:1" data-cat-idx="'+i+'" data-field="l"><input type="color" value="'+c.c+'" style="width:40px;height:36px;padding:2px;border-radius:6px;border:1px solid var(--bd)" data-cat-idx="'+i+'" data-field="c"><button class="le-del" onclick="removeDonutCat('+i+')">✕</button></div><div style="font-size:11px;color:var(--muted);margin-bottom:6px">بلاک‌های مرتبط:</div><div style="display:flex;flex-wrap:wrap;gap:6px">'+blocks.map(b=>{const checked=c.t.includes(b.id);return'<label style="display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;border:1px solid '+(checked?b.color+'60':'var(--bd)')+';background:'+(checked?b.color+'15':'var(--s3)')+';cursor:pointer;font-size:11px;transition:all .2s"><input type="checkbox" '+(checked?'checked':'')+' data-cat-idx="'+i+'" data-block-id="'+b.id+'" style="display:none" onchange="toggleDonutBlock('+i+',\''+b.id+'\',this.checked)">'+(b.icon||'•')+' '+(b.shortLabel||SHORT_LABELS[b.id]||b.title||b.id)+'</label>'}).join('')+'</div></div>').join('');
+  }
+  window._editingDonutCats=editingCats;
+  window._donutBlocks=blocks;
+  render();
+  document.getElementById('edit-donut-modal').classList.add('on');
+  window._renderDonutEdit=render;
+}
+function toggleDonutBlock(catIdx,blockId,checked){
+  const cats=window._editingDonutCats;
+  if(!cats[catIdx])return;
+  if(checked){if(!cats[catIdx].t.includes(blockId))cats[catIdx].t.push(blockId)}
+  else{cats[catIdx].t=cats[catIdx].t.filter(t=>t!==blockId)}
+  window._renderDonutEdit();
+}
+function addDonutCat(){
+  const blocks=window._donutBlocks||getBlocks();
+  window._editingDonutCats.push({id:'cat'+Date.now(),l:'دسته جدید',c:'#888888',t:[]});
+  window._renderDonutEdit();
+}
+function removeDonutCat(idx){
+  window._editingDonutCats.splice(idx,1);
+  window._renderDonutEdit();
+}
+function saveDonutCats(){
+  const el=document.getElementById('donut-cats-list');
+  const inputs=el.querySelectorAll('input[data-field]');
+  inputs.forEach(inp=>{
+    const idx=parseInt(inp.dataset.catIdx);
+    const field=inp.dataset.field;
+    if(window._editingDonutCats[idx])window._editingDonutCats[idx][field]=inp.value;
+  });
+  sv('_customDonutCats',window._editingDonutCats);
+  closeEditModal('edit-donut-modal');
+  renderDonut();
+  toast('🎯 دسته‌ها ذخیره شد','success');
+}
 function editStreaks(){const stks=getStreakDefs();const items=stks.map(s=>s.i+' '+s.l+'|'+s.c+'|'+s.t.join(','));openListEditor('ویرایش استریک‌ها',items,(vals)=>{const newStks=vals.map((v,i)=>{const parts=v.split('|');const nameParts=(parts[0]||'?').split(' ');return{i:nameParts[0]||'📊',l:nameParts.slice(1).join(' ')||'?',c:parts[1]||'#888',t:(parts[2]||'').split(',').map(s=>s.trim()).filter(Boolean)}});sv('_customStreaks',newStks);renderStreaks()})}
 function editJChecks(){const checks=getJChecks();openListEditor('ویرایش آیتم‌های چک لیست',checks,(vals)=>{sv('_customJChecks',vals);renderJournal()})}
 
 // OVERVIEW
-function renderOverview(){renderQuote();renderHero();renderWLabel();renderWGrid();renderBChart();renderDonut();renderStreaks()}
+function renderOverview(){renderQuote();renderHero();renderWLabel();renderWGrid();renderBChart();renderDonut();renderStreaks();renderMonthly()}
 function cw(d){WO+=d;renderOverview()}
 
-function renderHero(){const days=weekDays(WO);const today=new Date();today.setHours(0,0,0,0);const allTasks=getOverviewTasks();let td=0,tp=0,gym=0,trade=0,ai=0,stk=0;days.forEach((d,i)=>{const rest=isRest(WO,i),done=getDone(WO,i);const tasks=allTasks.filter(t=>rest?!['gym','postmeal'].includes(t.id):true);tp+=tasks.length;td+=done.length;if(done.includes('gym'))gym++;if(done.includes('trade1')||done.includes('trade2'))trade++;if(done.includes('ai'))ai++});for(let i=6;i>=0;i--){const done=getDone(WO,i),rest=isRest(WO,i);const tasks=allTasks.filter(t=>rest?!['gym','postmeal'].includes(t.id):true);if(done.length>=Math.ceil(tasks.length*.5))stk++;else break}const pct=tp?Math.round(td/tp*100):0;const trades=getTrades();const wr=trades.length?Math.round(trades.filter(t=>t.result==='win').length/trades.length*100):0;document.getElementById('hero-stats').innerHTML=[{c:'var(--gold)',v:toFaPct(pct),l:'تکمیل هفتگی',s:toFa(td)+'/'+toFa(tp)},{c:'var(--orange)',v:toFa(gym),l:'روز باشگاه',s:'از ۴ روز'},{c:'var(--blue)',v:toFa(trade),l:'روز ترید',s:'از ۷ روز'},{c:'var(--purple)',v:toFa(ai),l:'روز آموزش AI',s:'این هفته'},{c:'var(--green)',v:toFaPct(wr),l:'وین ریت',s:toFa(trades.length)+' معامله'}].map(s=>'<div class="sc sc-glow" style="--c:'+s.c+'"><div class="sval">'+s.v+'</div><div class="slbl">'+s.l+'</div><div class="ssub">'+s.s+'</div></div>').join('')}
+function renderHero(){const days=weekDays(WO);const today=new Date();today.setHours(0,0,0,0);const allTasks=getOverviewTasks();let td=0,tp=0,gym=0,trade=0,ai=0,stk=0;days.forEach((d,i)=>{const rest=isRest(WO,i),done=getDone(WO,i);const tasks=allTasks.filter(t=>rest?!['gym','postmeal'].includes(t.id):true);tp+=tasks.length;td+=done.length;if(done.includes('gym'))gym++;if(done.includes('trade1')||done.includes('trade2'))trade++;if(done.includes('ai'))ai++});for(let i=6;i>=0;i--){const done=getDone(WO,i),rest=isRest(WO,i);const tasks=allTasks.filter(t=>rest?!['gym','postmeal'].includes(t.id):true);if(done.length>=Math.ceil(tasks.length*.5))stk++;else break}const pct=tp?Math.round(td/tp*100):0;const trades=getTrades();const wr=trades.length?Math.round(trades.filter(t=>t.result==='win').length/trades.length*100):0;const totalPnl=trades.reduce((s,t)=>s+(t.rawpnl||0),0);const pnlSign=totalPnl>=0?'+':'';document.getElementById('hero-stats').innerHTML=[{c:'var(--gold)',v:toFaPct(pct),l:'تکمیل هفتگی',s:toFa(td)+'/'+toFa(tp)},{c:'var(--orange)',v:toFa(gym),l:'روز باشگاه',s:'از ۴ روز'},{c:'var(--blue)',v:toFa(trade),l:'روز ترید',s:'از ۷ روز'},{c:'var(--purple)',v:toFa(ai),l:'روز آموزش AI',s:'این هفته'},{c:'var(--green)',v:pnlSign+'$'+totalPnl.toFixed(2),l:'PnL کل',s:toFaPct(wr)+' وین ریت'}].map(s=>'<div class="sc sc-glow" style="--c:'+s.c+'"><div class="sval">'+s.v+'</div><div class="slbl">'+s.l+'</div><div class="ssub">'+s.s+'</div></div>').join('')}
 
 function renderWLabel(){const days=weekDays(WO);document.getElementById('wlbl').textContent=WO===0?'هفته جاری':WO===-1?'هفته گذشته':WO===1?'هفته آینده':toFa(WO)+' هفته';document.getElementById('wsub').textContent=shamsiShort(days[0])+' — '+shamsiShort(days[6])}
 
@@ -1263,11 +1339,104 @@ function getOverviewTasks(){return getBlocks().map(b=>({id:b.id,icon:b.icon,lbl:
 
 function renderWGrid(){const days=weekDays(WO);const today=new Date();today.setHours(0,0,0,0);const g=document.getElementById('wgrid');g.innerHTML='';const allTasks=getOverviewTasks();days.forEach((d,i)=>{const isT=d.getTime()===today.getTime(),rest=isRest(WO,i),done=getDone(WO,i);const tasks=allTasks.filter(t=>rest?!['gym','postmeal'].includes(t.id):true);const pct=tasks.length?Math.round(done.length/tasks.length*100):0;const isFut=d>today;const sc=pct>=80?'var(--green)':pct>=50?'var(--gold)':'var(--orange)';const sb=pct>=80?'rgba(0,214,143,.1)':pct>=50?'rgba(240,180,41,.1)':'rgba(249,115,22,.1)';const col=document.createElement('div');col.className='dcol'+(isT?' today':'');col.innerHTML='<div class="dhead"><div class="dname">'+DAYS_SH[i]+'</div><div class="dnum">'+toFa(shamsiDay(d))+'</div><div class="dpct" id="dpct-'+i+'" style="'+(rest?'background:var(--s3);color:var(--muted)':isFut?'background:var(--s2);color:var(--dim)':'background:'+sb+';color:'+sc)+'">'+(rest?'😴':isFut?'—':toFaPct(pct))+'</div></div><div class="dtasks" id="dt-'+i+'"></div>';g.appendChild(col);const dtEl=col.querySelector('#dt-'+i);tasks.forEach(task=>{const isDone=done.includes(task.id);const tc=document.createElement('div');tc.className='tc'+(isDone?' done':'');tc.innerHTML='<span class="tcdot" style="background:'+task.color+';'+(isDone?'box-shadow:0 0 5px '+task.color:'')+'"></span><span class="tclbl" style="'+(isDone?'color:'+task.color+';text-decoration:line-through':'')+'">'+task.lbl+'</span>';if(!isFut){tc.onclick=()=>{const nd=!getDone(WO,i).includes(task.id);setDone(WO,i,task.id,nd);tc.classList.toggle('done',nd);tc.querySelector('.tcdot').style.boxShadow=nd?'0 0 5px '+task.color:'none';tc.querySelector('.tclbl').style.cssText=nd?'color:'+task.color+';text-decoration:line-through':'';tc.style.animation='pop .3s ease';setTimeout(()=>tc.style.animation='',300);toast(nd?'✅ '+task.lbl:'↩️ '+task.lbl,nd?'success':'info');const newDone=getDone(WO,i);const newTasks=getOverviewTasks().filter(t=>isRest(WO,i)?!['gym','postmeal'].includes(t.id):true);const newPct=newTasks.length?Math.round(newDone.length/newTasks.length*100):0;const pctEl=document.getElementById('dpct-'+i);if(pctEl){const nsc=newPct>=80?'var(--green)':newPct>=50?'var(--gold)':'var(--orange)';const nsb=newPct>=80?'rgba(0,214,143,.1)':newPct>=50?'rgba(240,180,41,.1)':'rgba(249,115,22,.1)';pctEl.style.background=nsb;pctEl.style.color=nsc;pctEl.textContent=toFaPct(newPct)}renderHero();renderBChart();renderDonut();renderStreaks()}}dtEl.appendChild(tc)});if(!isFut){const rb=document.createElement('div');rb.className='tc-rest-btn';rb.textContent=rest?'💪 فعال کن':'😴 استراحت';rb.onclick=()=>{setRest(WO,i,!rest);renderOverview()};dtEl.appendChild(rb)}})}
 
-function renderBChart(){const days=weekDays(WO);const today=new Date();today.setHours(0,0,0,0);const el=document.getElementById('bchart');el.innerHTML='';const allTasks=getOverviewTasks();const vals=days.map((d,i)=>{const rest=isRest(WO,i),done=getDone(WO,i);const tasks=allTasks.filter(t=>rest?!['gym','postmeal'].includes(t.id):true);return tasks.length?Math.round(done.length/tasks.length*100):0});const mx=Math.max(...vals,1);days.forEach((d,i)=>{const p=vals[i],isT=d.getTime()===today.getTime();const c=p>=80?'var(--green)':p>=50?'var(--gold)':'var(--orange)';const h=Math.round(p/mx*100);const bg=document.createElement('div');bg.className='bg-group';bg.innerHTML='<div class="bg-wrap"><div class="bg-bar" style="height:'+h+'%;background:'+(isT?'var(--gold)':c)+';opacity:'+(isT?1:.65)+'" data-v="'+p+'%"></div></div><div class="bg-lbl">'+DAYS_SH[i]+'</div>';el.appendChild(bg)})}
+function renderBChart(){const days=weekDays(WO);const today=new Date();today.setHours(0,0,0,0);const el=document.getElementById('bchart');el.innerHTML='';const allTasks=getOverviewTasks();const vals=days.map((d,i)=>{const rest=isRest(WO,i),done=getDone(WO,i);const tasks=allTasks.filter(t=>rest?!['gym','postmeal'].includes(t.id):true);return tasks.length?Math.round(done.length/tasks.length*100):0});days.forEach((d,i)=>{const p=vals[i],isT=d.getTime()===today.getTime();const isFut=d>today;const rest=isRest(WO,i);const c=p>=80?'var(--green)':p>=50?'var(--gold)':p>0?'var(--orange)':'var(--dim)';const h=Math.max(p,3);const bg=document.createElement('div');bg.className='bg-group';const showPct=!isFut&&!rest;bg.innerHTML='<div class="bg-pct" style="color:'+(isT?'var(--gold)':c)+';font-weight:700">'+(isFut?'—':rest?'😴':toFaPct(p))+'</div><div class="bg-wrap"><div class="bg-bar" style="height:'+h+'%;background:'+(isT?'var(--gold)':c)+';opacity:'+(isT?1:isFut?.25:rest?.4:.8)+'" data-v="'+(showPct?p+'%':'')+'"></div></div><div class="bg-lbl">'+DAYS_SH[i]+'</div>';el.appendChild(bg)})}
 
-function renderDonut(){const cats=getDonutCats();let tots={};cats.forEach(c=>tots[c.id]=0);let grand=0;for(let i=0;i<7;i++){const done=getDone(WO,i);cats.forEach(c=>{const n=c.t.filter(t=>done.includes(t)).length;tots[c.id]+=n;grand+=n})}if(!grand)grand=1;const svg=document.getElementById('donut-svg');const r=36,cx=48,cy=48,sw=10,circ=2*Math.PI*r;svg.innerHTML='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="var(--dim)" stroke-width="'+sw+'"/>';let off=0;cats.forEach(c=>{const f=tots[c.id]/grand,len=f*circ;const el=document.createElementNS('http://www.w3.org/2000/svg','circle');el.setAttribute('cx',cx);el.setAttribute('cy',cy);el.setAttribute('r',r);el.setAttribute('fill','none');el.setAttribute('stroke',c.c);el.setAttribute('stroke-width',sw);el.setAttribute('stroke-linecap','round');el.setAttribute('stroke-dasharray',len+' '+(circ-len));el.setAttribute('stroke-dashoffset',''+-(off-circ/4));svg.appendChild(el);off+=len});document.getElementById('donut-leg').innerHTML=cats.map(c=>{const p=Math.round(tots[c.id]/grand*100);return'<div class="d-item"><div class="d-dot" style="background:'+c.c+'"></div><div class="d-info"><div class="d-name">'+c.l+'</div><div class="d-bw"><div class="d-bf" style="width:'+p+'%;background:'+c.c+'"></div></div></div><div class="d-pct" style="color:'+c.c+'">'+p+'%</div></div>'}).join('')}
+function renderDonut(){
+  const cats=getDonutCats();
+  const allBlockIds=getBlocks().map(b=>b.id);
+  const activeCats=cats.filter(c=>c.t.some(t=>allBlockIds.includes(t)));
+  let tots={};activeCats.forEach(c=>tots[c.id]=0);let grand=0;
+  for(let i=0;i<7;i++){const done=getDone(WO,i);activeCats.forEach(c=>{const n=c.t.filter(t=>done.includes(t)).length;tots[c.id]+=n;grand+=n})}
+  if(!grand)grand=1;
+  const svg=document.getElementById('donut-svg');
+  const r=36,cx=48,cy=48,sw=10,circ=2*Math.PI*r;
+  svg.innerHTML='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="var(--dim)" stroke-width="'+sw+'"/>';
+  let off=0;
+  activeCats.forEach(c=>{const f=tots[c.id]/grand,len=f*circ;const el=document.createElementNS('http://www.w3.org/2000/svg','circle');el.setAttribute('cx',cx);el.setAttribute('cy',cy);el.setAttribute('r',r);el.setAttribute('fill','none');el.setAttribute('stroke',c.c);el.setAttribute('stroke-width',sw);el.setAttribute('stroke-linecap','round');el.setAttribute('stroke-dasharray',len+' '+(circ-len));el.setAttribute('stroke-dashoffset',''+-(off-circ/4));svg.appendChild(el);off+=len});
+  document.getElementById('donut-leg').innerHTML=activeCats.map(c=>{const p=Math.round(tots[c.id]/grand*100);return'<div class="d-item"><div class="d-dot" style="background:'+c.c+'"></div><div class="d-info"><div class="d-name">'+c.l+'</div><div class="d-bw"><div class="d-bf" style="width:'+p+'%;background:'+c.c+'"></div></div></div><div class="d-pct" style="color:'+c.c+'">'+p+'%</div></div>'}).join('')}
 
 function renderStreaks(){const today=new Date();today.setHours(0,0,0,0);const todayDow=(today.getDay()+1)%7;const stks=getStreakDefs();document.getElementById('stk-grid').innerHTML=stks.map(s=>{const dots=Array.from({length:7},(_,i)=>{const done=getDone(WO,i);return s.t.some(t=>done.includes(t))});let stk=0;let cWO=WO;let cDay=todayDow;for(let safe=0;safe<400;safe++){if(s.t.some(t=>getDone(cWO,cDay).includes(t))){stk++;cDay--;if(cDay<0){cDay=6;cWO--}}else break}return'<div class="stk-item"><div class="stk-num" style="color:'+s.c+'">'+toFa(stk)+(stk>=3?'🔥':'')+'</div><div class="stk-name">'+s.i+' '+s.l+'</div><div class="stk-dots">'+dots.map(on=>'<div class="sdot '+(on?'on':'')+'" style="--sc:'+s.c+'"></div>').join('')+'</div></div>'}).join('')}
+
+// MONTHLY TRACKING
+let MO=0; // month offset (0 = current shamsi month)
+function jalaliMonthDays(jy,jm){if(jm<=6)return 31;if(jm<=11)return 30;const isLeap=((((jy-(jy>0?474:473))%2820+474+38)*682)%2816)<682;return isLeap?30:29}
+function jalaliToGregorian(jy,jm,jd){var sal_a,gy,gm,gd,days;jy+=1595;days=-355668+(365*jy)+(Math.floor(jy/33)*8)+Math.floor(((jy%33)+3)/4)+jd+((jm<7)?(jm-1)*31:((jm-7)*30)+186);gy=400*Math.floor(days/146097);days%=146097;if(days>36524){gy+=100*Math.floor(--days/36524);days%=36524;if(days>=365)days++}gy+=4*Math.floor(days/1461);days%=1461;if(days>365){gy+=Math.floor((days-1)/365);days=(days-1)%365}gd=days+1;sal_a=[0,31,((gy%4===0&&gy%100!==0)||(gy%400===0))?29:28,31,30,31,30,31,31,30,31,30,31];for(gm=0;gm<13&&gd>sal_a[gm];gm++)gd-=sal_a[gm];return new Date(gy,gm-1,gd)}
+function renderMonthly(){
+  const el=document.getElementById('monthly-tracking');
+  if(!el)return;
+  const today=new Date();today.setHours(0,0,0,0);
+  const [jyT,jmT,jdT]=gregorianToJalali(today.getFullYear(),today.getMonth()+1,today.getDate());
+  // calculate selected month
+  let jy=jyT,jm=jmT+MO;
+  while(jm<1){jm+=12;jy--}while(jm>12){jm-=12;jy++}
+  const monthNames=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  const totalDays=jalaliMonthDays(jy,jm);
+  const allTasks=getOverviewTasks();
+  // Build days with stats
+  const days=[];
+  let monthCompleted=0,monthRest=0,monthTotal=0,monthDone=0,perfectDays=0,gymDays=0,tradeDays=0,aiDays=0;
+  const trades=getTrades();
+  let monthPnl=0,monthTradeCount=0;
+  for(let d=1;d<=totalDays;d++){
+    const greg=jalaliToGregorian(jy,jm,d);
+    greg.setHours(0,0,0,0);
+    const isFuture=greg>today;
+    const done=getDoneByDate(greg);
+    const rest=isRestByDate(greg);
+    const tasks=allTasks.filter(t=>rest?!['gym','postmeal'].includes(t.id):true);
+    const pct=tasks.length?Math.round(done.length/tasks.length*100):0;
+    days.push({d,greg,isFuture,done,rest,tasks,pct,isToday:greg.getTime()===today.getTime()});
+    if(!isFuture){
+      monthDone+=done.length;monthTotal+=tasks.length;
+      if(rest)monthRest++;
+      else if(pct>=50)monthCompleted++;
+      if(pct>=90)perfectDays++;
+      if(done.includes('gym'))gymDays++;
+      if(done.includes('trade1')||done.includes('trade2'))tradeDays++;
+      if(done.includes('ai'))aiDays++;
+    }
+    // Trades for this day
+    trades.forEach(t=>{
+      const td=new Date(t.date||t.created_at);td.setHours(0,0,0,0);
+      if(td.getTime()===greg.getTime()){monthPnl+=t.rawpnl||0;monthTradeCount++}
+    });
+  }
+  const monthPct=monthTotal?Math.round(monthDone/monthTotal*100):0;
+  // Find first day of month weekday (Shamsi week: Sat=0)
+  const first=jalaliToGregorian(jy,jm,1);
+  const firstDow=(first.getDay()+1)%7;
+  // Render
+  const headerHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap"><button class="wbtn" onclick="cMonth(-1)">‹</button><div style="flex:1"><div style="font-size:15px;font-weight:700">'+monthNames[jm-1]+' '+toFa(jy)+'</div><div style="font-size:11px;color:var(--muted)">'+toFa(totalDays)+' روز</div></div><button class="wbtn" onclick="cMonth(1)">›</button></div>';
+  // Stats row
+  const statsHTML='<div class="g4" style="margin-bottom:14px;gap:8px">'+[
+    {c:'var(--gold)',v:toFaPct(monthPct),l:'تکمیل ماه',s:toFa(monthDone)+'/'+toFa(monthTotal)},
+    {c:'var(--green)',v:toFa(perfectDays),l:'روز عالی',s:'≥۹۰٪'},
+    {c:'var(--orange)',v:toFa(gymDays),l:'باشگاه',s:'این ماه'},
+    {c:'var(--purple)',v:(monthPnl>=0?'+':'')+'$'+monthPnl.toFixed(0),l:'PnL ماه',s:toFa(monthTradeCount)+' معامله'}
+  ].map(s=>'<div style="background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:10px;text-align:center"><div style="font-size:18px;font-weight:900;color:'+s.c+';line-height:1">'+s.v+'</div><div style="font-size:11px;color:var(--muted);margin-top:4px">'+s.l+'</div><div style="font-size:10px;color:var(--dim);margin-top:2px">'+s.s+'</div></div>').join('')+'</div>';
+  // Calendar grid
+  const dayHeaders='<div class="m-cal-head">'+DAYS_SH.map(d=>'<div>'+d+'</div>').join('')+'</div>';
+  let cellsHTML='<div class="m-cal-grid">';
+  for(let i=0;i<firstDow;i++)cellsHTML+='<div class="m-cal-cell empty"></div>';
+  days.forEach(day=>{
+    let bg='var(--s2)',c='var(--muted)',border='var(--bd)';
+    if(day.isFuture){bg='var(--s2)';c='var(--dim)'}
+    else if(day.rest){bg='var(--s3)';c='var(--muted)'}
+    else{
+      if(day.pct>=80){bg='rgba(0,214,143,.15)';c='var(--green)';border='rgba(0,214,143,.3)'}
+      else if(day.pct>=50){bg='rgba(240,180,41,.15)';c='var(--gold)';border='rgba(240,180,41,.3)'}
+      else if(day.pct>0){bg='rgba(249,115,22,.1)';c='var(--orange)';border='rgba(249,115,22,.2)'}
+    }
+    const todayClass=day.isToday?' today':'';
+    const title=toFa(day.d)+' '+monthNames[jm-1]+': '+(day.isFuture?'آینده':day.rest?'استراحت':toFaPct(day.pct)+' ('+toFa(day.done.length)+'/'+toFa(day.tasks.length)+')');
+    cellsHTML+='<div class="m-cal-cell'+todayClass+'" style="background:'+bg+';border-color:'+border+';color:'+c+'" title="'+title+'"><div class="m-cal-d">'+toFa(day.d)+'</div>'+(day.rest?'<div class="m-cal-i">😴</div>':day.isFuture?'':'<div class="m-cal-i">'+toFa(day.pct)+'</div>')+'</div>';
+  });
+  cellsHTML+='</div>';
+  // Legend
+  const legend='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:11px;color:var(--muted);justify-content:center"><span><span style="display:inline-block;width:10px;height:10px;background:rgba(0,214,143,.3);border-radius:3px;vertical-align:middle"></span> ≥۸۰٪</span><span><span style="display:inline-block;width:10px;height:10px;background:rgba(240,180,41,.3);border-radius:3px;vertical-align:middle"></span> ۵۰-۷۹٪</span><span><span style="display:inline-block;width:10px;height:10px;background:rgba(249,115,22,.2);border-radius:3px;vertical-align:middle"></span> ‹۵۰٪</span><span>😴 استراحت</span></div>';
+  el.innerHTML=headerHTML+statsHTML+dayHeaders+cellsHTML+legend;
+}
+function cMonth(d){MO+=d;renderMonthly()}
 
 // SCHEDULE BLOCKS
 const DEFAULT_BLOCKS=[
@@ -1287,15 +1456,16 @@ const DEFAULT_BLOCKS=[
 {id:'sleep',icon:'💤',time:'23:30-00:00',dur:'30m',title:'روتین خواب',shortLabel:'خواب',color:'#8b5cf6',short:'بدون صفحه + دوش گرم',detail:'خاموش صفحه‌ها. دوش گرم. 8 ساعت خواب.',tags:['خواب']}
 ];
 
-function getBlocks(){const custom=ld('_customBlocks',null);if(custom&&custom.length)return custom;return DEFAULT_BLOCKS}
+function getBlocks(){const custom=ld('_customBlocks',null);if(custom&&custom.length)return custom.map(b=>({...b,shortLabel:b.shortLabel||SHORT_LABELS[b.id]||(b.title?(b.title.length>6?b.title.substring(0,6)+'…':b.title):b.id),icon:b.icon||'•',color:b.color||'#888',title:b.title||b.id,short:b.short||'',detail:b.detail||'',time:b.time||'',dur:b.dur||'',tags:b.tags||[]}));return DEFAULT_BLOCKS}
 
 function renderSchedule(){const days=weekDays(WO);const today=new Date();today.setHours(0,0,0,0);if(selSched===null){const ti=days.findIndex(d=>d.getTime()===today.getTime());selSched=ti>=0?ti:0}const nav=document.getElementById('ds-list');nav.innerHTML='';days.forEach((d,i)=>{const rest=isRest(WO,i),done=getDone(WO,i);const blks=rest?getBlocks().filter(b=>!['gym','postmeal'].includes(b.id)):getBlocks();const pct=blks.length?Math.round(done.length/blks.length*100):0;const isT=d.getTime()===today.getTime();const sc=pct>=80?'var(--green)':pct>=50?'var(--gold)':'var(--orange)';const sb=pct>=80?'rgba(0,214,143,.1)':pct>=50?'rgba(240,180,41,.1)':'rgba(249,115,22,.1)';const el=document.createElement('div');el.className='ds-item'+(i===selSched?' on':'');el.innerHTML='<div><div class="ds-dname">'+DAYS_FA[i]+(isT?' ●':'')+'</div><div class="ds-ddate">'+shamsiShort(d)+'</div></div><span style="margin-right:auto;font-size:18px">'+(rest?'😴':done.length>0?'✅':'📋')+'</span>'+(rest?'':'<span class="ds-pct" style="background:'+sb+';color:'+sc+'">'+toFaPct(pct)+'</span>');el.onclick=()=>{selSched=i;renderSchedule()};nav.appendChild(el)});renderSchedMain()}
 
-function renderSchedMain(){const d=weekDays(WO)[selSched];const today=new Date();today.setHours(0,0,0,0);const rest=isRest(WO,selSched),done=getDone(WO,selSched);const blks=rest?getBlocks().filter(b=>!['gym','postmeal'].includes(b.id)):getBlocks();const pct=blks.length?Math.round(done.length/blks.length*100):0;const isT=d.getTime()===today.getTime();const circ=2*Math.PI*28;const off=circ*(1-pct/100);const rc=pct>=80?'var(--green)':pct>=50?'var(--gold)':'var(--orange)';const main=document.getElementById('sched-main');main.innerHTML='<div class="sday-head"><div class="sday-bigdate">'+toFa(shamsiDay(d))+'</div><div class="sday-info"><h3>'+DAYS_FA[selSched]+(isT?' — امروز':'')+'</h3><p>'+shamsiDate(d)+'</p><p style="margin-top:5px;font-size:11px;color:'+(rest?'var(--muted)':'var(--green)')+'">'+(rest?'🛌 روز استراحت':'💪 روز تمرین')+'</p></div><div class="sday-ring"><svg width="68" height="68" viewBox="0 0 68 68"><circle cx="34" cy="34" r="28" fill="none" stroke="var(--dim)" stroke-width="7"/><circle cx="34" cy="34" r="28" fill="none" stroke="'+rc+'" stroke-width="7" stroke-dasharray="'+circ.toFixed(1)+'" stroke-dashoffset="'+(circ/4+off).toFixed(1)+'" stroke-linecap="round"/></svg><div class="sring-inner"><span class="sring-pct">'+pct+'%</span><span class="sring-lbl">تکمیل</span></div></div><button class="rest-toggle '+(rest?'active':'')+'" onclick="togRest()">'+(rest?'🏋️ فعال کن':'😴 استراحت')+'</button><button class="edit-btn" onclick="openAddBlock()" title="افزودن بلاک" style="width:32px;height:32px;font-size:16px;border-radius:50%">➕</button></div>'+(rest?'<div style="padding:8px 16px;margin-bottom:10px;background:rgba(240,180,41,.06);border:1px solid rgba(240,180,41,.15);border-radius:10px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px">🛌 باشگاه و وعده باشگاه حذف شدن — بقیه برنامه فعاله</div>':'')+'<div class="bl-list" id="bl-list"></div>';renderBLList(done,d)}
+function renderSchedMain(){const d=weekDays(WO)[selSched];const today=new Date();today.setHours(0,0,0,0);const rest=isRest(WO,selSched),done=getDone(WO,selSched);const blks=rest?getBlocks().filter(b=>!['gym','postmeal'].includes(b.id)):getBlocks();const pct=blks.length?Math.round(done.length/blks.length*100):0;const isT=d.getTime()===today.getTime();const circ=2*Math.PI*28;const off=circ*(1-pct/100);const rc=pct>=80?'var(--green)':pct>=50?'var(--gold)':'var(--orange)';const n=getNote(WO,selSched);const moodHTML='<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap"><div style="font-size:14px;font-weight:700;white-space:nowrap">😊 حال روز — '+DAYS_FA[selSched]+'</div><div style="display:flex;gap:6px;flex:1;justify-content:center">'+MOODS.map((m,i)=>'<div style="padding:8px 12px;border-radius:9px;border:1px solid '+(n.mood===m?'var(--gold)':'var(--bd)')+';background:'+(n.mood===m?'rgba(240,180,41,.1)':'var(--s2)')+';font-size:20px;cursor:pointer;transition:all .2s;'+(n.mood===m?'transform:scale(1.1)':'')+'" onclick="schedSetMood(\''+m+'\')" title="'+MOOD_L[i]+'">'+m+'</div>').join('')+'</div>'+(n.mood?'<div style="font-size:12px;color:var(--muted)">'+MOOD_L[MOODS.indexOf(n.mood)]+'</div>':'')+'</div>';const main=document.getElementById('sched-main');main.innerHTML='<div class="sday-head"><div class="sday-bigdate">'+toFa(shamsiDay(d))+'</div><div class="sday-info"><h3>'+DAYS_FA[selSched]+(isT?' — امروز':'')+'</h3><p>'+shamsiDate(d)+'</p><p style="margin-top:5px;font-size:11px;color:'+(rest?'var(--muted)':'var(--green)')+'">'+(rest?'🛌 روز استراحت':'💪 روز تمرین')+'</p></div><div class="sday-ring"><svg width="68" height="68" viewBox="0 0 68 68"><circle cx="34" cy="34" r="28" fill="none" stroke="var(--dim)" stroke-width="7"/><circle cx="34" cy="34" r="28" fill="none" stroke="'+rc+'" stroke-width="7" stroke-dasharray="'+circ.toFixed(1)+'" stroke-dashoffset="'+(circ/4+off).toFixed(1)+'" stroke-linecap="round"/></svg><div class="sring-inner"><span class="sring-pct">'+pct+'%</span><span class="sring-lbl">تکمیل</span></div></div><button class="rest-toggle '+(rest?'active':'')+'" onclick="togRest()">'+(rest?'🏋️ فعال کن':'😴 استراحت')+'</button><button class="edit-btn" onclick="openAddBlock()" title="افزودن بلاک" style="width:32px;height:32px;font-size:16px;border-radius:50%">➕</button></div>'+moodHTML+(rest?'<div style="padding:8px 16px;margin-bottom:10px;background:rgba(240,180,41,.06);border:1px solid rgba(240,180,41,.15);border-radius:10px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px">🛌 باشگاه و وعده باشگاه حذف شدن — بقیه برنامه فعاله</div>':'')+'<div class="bl-list" id="bl-list"></div>';renderBLList(done,d)}
 
 function renderBLList(done,d){const today=new Date();today.setHours(0,0,0,0);const isFut=d>today;const list=document.getElementById('bl-list');const rest=isRest(WO,selSched);const blocks=rest?getBlocks().filter(b=>!['gym','postmeal'].includes(b.id)):getBlocks();blocks.forEach((b,idx)=>{const isDone=done.includes(b.id);const bl=document.createElement('div');bl.className='bl'+(isDone?' done':'');bl.innerHTML='<div class="bl-row" onclick="togBl(this,\''+b.id+'\')"><div class="bl-accent" style="background:'+b.color+'"></div><div class="bl-check"><div class="bchk" onclick="event.stopPropagation();togBLTask(\''+b.id+'\',this)">'+(isDone?'✓':'')+'</div></div><div class="bl-meta"><div class="bl-top"><span class="bl-time">'+b.time+'</span><span class="bl-dur" style="color:'+b.color+';background:'+b.color+'18">'+b.dur+'</span><button class="edit-btn" onclick="event.stopPropagation();openEditBlock('+idx+')" title="ویرایش">✏️</button><button class="edit-btn" onclick="event.stopPropagation();confirmDelBlock('+idx+')" title="حذف" style="color:var(--red);border-color:rgba(239,68,68,.3)">🗑</button></div><div class="bl-title"><span>'+b.icon+'</span>'+b.title+'</div><div class="bl-short">'+b.short+'</div></div></div><div class="bl-detail-wrap"><div class="bl-detail">'+b.detail+'</div><div class="bl-tags">'+b.tags.map(t=>'<span class="btag" style="color:'+b.color+';border-color:'+b.color+'30;background:'+b.color+'10">'+t+'</span>').join('')+'</div></div>';list.appendChild(bl)})}
 
 function togBl(el,id){el.closest('.bl').classList.toggle('open')}
+function schedSetMood(m){const n=getNote(WO,selSched);n.mood=m;saveNote(WO,selSched,n);renderSchedMain();toast('😊 حال روز ذخیره شد','success')}
 function togBLTask(id,chk){const bl=chk.closest('.bl');const isDone=!bl.classList.contains('done');setDone(WO,selSched,id,isDone);bl.classList.toggle('done',isDone);chk.textContent=isDone?'✓':'';toast(isDone?'✅ انجام شد':'↩️ لغو شد',isDone?'success':'info');renderSchedule();renderOverview()}
 function togRest(){setRest(WO,selSched,!isRest(WO,selSched));renderSchedule();renderOverview()}
 
@@ -1381,22 +1551,29 @@ async function addTrade(){
   const sl=parseFloat(document.getElementById('t-sl').value);
   const tp=parseFloat(document.getElementById('t-tp').value);
   const exit=parseFloat(document.getElementById('t-exit').value);
-  const size=document.getElementById('t-size').value.trim();
+  const size=parseFloat(document.getElementById('t-size').value)||0;
+  const leverage=parseInt(document.getElementById('t-leverage').value)||1;
   const result=document.getElementById('t-result').value;
   const setup=document.getElementById('t-setup').value.trim();
   const tf=document.getElementById('t-tf').value.trim();
   const session=document.getElementById('t-session').value;
   const note=document.getElementById('t-note').value.trim();
   const tvlink=document.getElementById('t-tvlink').value.trim();
+  const dtVal=document.getElementById('t-datetime').value;
+  const tradeDate=dtVal?new Date(dtVal).toISOString():new Date().toISOString();
   if(!coin||!entry){toast('⚠️ حداقل نماد و قیمت ورود','warning');return}
-  const pnl=exit?((tradeDir==='long'?(exit-entry)/entry*100:(entry-exit)/entry*100)).toFixed(2):'0';
+  const pnlPct=exit?((tradeDir==='long'?(exit-entry)/entry*100:(entry-exit)/entry*100)*leverage):0;
+  const rawPnl=exit&&size?(size*pnlPct/100):0;
   const rr=(sl&&tp)?Math.abs((tp-entry)/(entry-sl)).toFixed(2):'—';
-  const trade={coin,dir:tradeDir,entry,sl,tp,exit:exit||0,size,result,setup,tf,session,note,tvlink,ss:pendingSS,pnl:parseFloat(pnl),rr};
+  const trade={coin,dir:tradeDir,entry,sl,tp,exit:exit||0,size,leverage,result,setup,tf,session,note,tvlink,ss:pendingSS,pnl:parseFloat(pnlPct.toFixed(2)),rawpnl:parseFloat(rawPnl.toFixed(2)),rr,date:tradeDate};
   try{
     await api('/api/trades',{method:'POST',body:JSON.stringify(trade)});
-    ['t-coin','t-entry','t-sl','t-tp','t-exit','t-size','t-setup','t-tf','t-note','t-tvlink'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+    ['t-coin','t-entry','t-sl','t-tp','t-exit','t-size','t-leverage','t-setup','t-tf','t-note','t-tvlink'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=id==='t-leverage'?'1':''});
     clearSS({preventDefault:()=>{},stopPropagation:()=>{}});
-    toast((result==='win'?'✅':result==='be'?'🟡':'❌')+' '+coin+' ثبت شد — PnL: '+pnl+'%',result==='win'?'success':result==='loss'?'error':'warning');
+    setTradeDateNow();
+    await loadTrades();
+    const sign=rawPnl>=0?'+':'';
+    toast((result==='win'?'✅':result==='be'?'🟡':'❌')+' '+coin+' ثبت شد — '+sign+'$'+rawPnl.toFixed(2),result==='win'?'success':result==='loss'?'error':'warning');
     renderTradeList();renderTradeStats_small();
   }catch(err){toast('❌ خطا: '+err.message,'error')}
 }
@@ -1404,25 +1581,89 @@ async function addTrade(){
 function getTrades(){return localCache['_trades']||[]}
 async function loadTrades(){try{const trades=await api('/api/trades');localCache['_trades']=trades;return trades}catch{return[]}}
 
-function renderTrade(){loadTrades().then(()=>{renderTradeDaySel();renderTradeList();renderTradeStats_small()})}
-function renderTradeDaySel(){const days=weekDays(WO);document.getElementById('trade-day-sel').innerHTML=days.map((d,i)=>'<button style="padding:4px 9px;border-radius:6px;border:1px solid var(--bd);background:var(--s2);color:var(--muted);font-family:Vazirmatn,sans-serif;font-size:11px;cursor:pointer">'+DAYS_SH[i]+' '+d.getDate()+'</button>').join('')}
+function renderTrade(){loadTrades().then(()=>{renderTradeDaySel();renderTradeList();renderTradeStats_small();setTradeDateNow()})}
+function renderTradeDaySel(){const days=weekDays(0);const today=new Date();today.setHours(0,0,0,0);document.getElementById('trade-day-sel').innerHTML='<span style="font-size:11px;color:var(--muted);margin-left:4px">انتخاب سریع روز:</span>'+days.map((d,i)=>{const isT=d.getTime()===today.getTime();const isFut=d>today;return'<button type="button" onclick="setTradeDateToDay('+i+')" style="padding:5px 9px;border-radius:6px;border:1px solid '+(isT?'var(--gold)':'var(--bd)')+';background:'+(isT?'rgba(240,180,41,.1)':'var(--s2)')+';color:'+(isT?'var(--gold)':isFut?'var(--dim)':'var(--text)')+';font-family:Vazirmatn,sans-serif;font-size:11px;font-weight:600;cursor:'+(isFut?'not-allowed':'pointer')+';opacity:'+(isFut?.5:1)+'" '+(isFut?'disabled':'')+'>'+DAYS_SH[i]+' '+toFa(shamsiDay(d))+'</button>'}).join('')}
+function pad2(n){return String(n).padStart(2,'0')}
+function localISO(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+'T'+pad2(d.getHours())+':'+pad2(d.getMinutes())}
+function setTradeDateNow(){const el=document.getElementById('t-datetime');if(!el)return;el.value=localISO(new Date());updateTradeDateShamsi()}
+function setTradeDateToDay(dayIdx){const d=weekDays(0)[dayIdx];const cur=new Date();d.setHours(cur.getHours(),cur.getMinutes(),0,0);document.getElementById('t-datetime').value=localISO(d);updateTradeDateShamsi()}
+function updateTradeDateShamsi(){const el=document.getElementById('t-datetime');const lbl=document.getElementById('t-datetime-shamsi');if(!el||!lbl)return;const v=el.value;if(!v){lbl.textContent='';return}const d=new Date(v);if(isNaN(d.getTime())){lbl.textContent='';return}lbl.textContent='= '+shamsiDate(d)+' • '+pad2(d.getHours())+':'+pad2(d.getMinutes())}
 
-function renderTradeList(){const filter=document.getElementById('tfilter')?.value||'all';let trades=getTrades();if(filter!=='all')trades=trades.filter(t=>t.result===filter);const el=document.getElementById('trade-list-wrap');if(!el)return;if(!trades.length){el.innerHTML='<div class="no-trades"><span class="nt-icon">📊</span>هنوز معامله‌ای ثبت نشده<div class="nt-sub">فرم بالا رو پر کن و اولین معاملت رو ثبت کن</div></div>';return}el.innerHTML=trades.map(t=>{const pl=t.pnl>=0;const exitVal=t.exit_price||t.exit||0;return'<div class="titem" id="ti-'+t.id+'"><div class="titem-row" onclick="togTItem('+t.id+')"><span class="titem-coin">'+t.coin+'</span><span class="titem-dir '+(t.dir==='long'?'tdir-long':'tdir-short')+'">'+(t.dir==='long'?'Long ↑':'Short ↓')+'</span><span class="titem-entry">'+t.entry+(exitVal?' → '+exitVal:'')+'</span><span class="titem-pnl" style="color:'+(pl?'var(--green)':'var(--red)')+'">'+(pl?'+':'')+t.pnl+'%</span><span class="titem-rr">RR '+t.rr+'</span><span style="font-size:16px">'+(t.result==='win'?'✅':t.result==='loss'?'❌':'🟡')+'</span><button class="titem-del" onclick="event.stopPropagation();confirmDelTrade('+t.id+')">✕</button></div><div class="titem-expand" id="te-'+t.id+'">'+(t.ss?'<img src="'+t.ss+'" class="titem-ss" onclick="openLB(\''+t.ss+'\')" title="بزرگ نمایی">':'')+(t.tvlink?'<a href="'+t.tvlink+'" target="_blank" style="font-size:11px;color:var(--blue);display:block;margin-bottom:8px">🔗 TradingView</a>':'')+(t.setup||t.note?'<div class="titem-note">'+(t.setup?'<strong>ستاپ:</strong> '+t.setup+'<br>':'')+(t.note?t.note:'')+'</div>':'')+'<div class="titem-tags">'+(t.tf?'<span class="titem-tag">⏱ '+t.tf+'</span>':'')+(t.session?'<span class="titem-tag">🌍 '+(t.session==='eu'?'اروپا':t.session==='us'?'آمریکا':'آسیا')+'</span>':'')+(t.size?'<span class="titem-tag">📊 '+t.size+'%</span>':'')+'<span class="titem-tag" style="direction:ltr">'+new Date(t.date||t.created_at).toLocaleDateString('fa-IR')+'</span></div></div></div>'}).join('')}
+function renderTradeList(){const filter=document.getElementById('tfilter')?.value||'all';let trades=getTrades();if(filter!=='all')trades=trades.filter(t=>t.result===filter);const el=document.getElementById('trade-list-wrap');if(!el)return;if(!trades.length){el.innerHTML='<div class="no-trades"><span class="nt-icon">📊</span>هنوز معامله‌ای ثبت نشده<div class="nt-sub">فرم بالا رو پر کن و اولین معاملت رو ثبت کن</div></div>';return}  el.innerHTML=trades.map(t=>{const rawPnl=t.rawpnl||0;const pl=rawPnl>=0;const exitVal=t.exit_price||t.exit||0;return'<div class="titem" id="ti-'+t.id+'"><div class="titem-row" onclick="togTItem('+t.id+')"><span class="titem-coin">'+t.coin+'</span><span class="titem-dir '+(t.dir==='long'?'tdir-long':'tdir-short')+'">'+(t.dir==='long'?'Long ↑':'Short ↓')+'</span><span class="titem-entry">'+t.entry+(exitVal?' → '+exitVal:'')+'</span><span class="titem-pnl" style="color:'+(pl?'var(--green)':'var(--red)')+'">'+(pl?'+':'')+'$'+rawPnl.toFixed(2)+'</span><span class="titem-rr">RR '+t.rr+'</span><span style="font-size:16px">'+(t.result==='win'?'✅':t.result==='loss'?'❌':'🟡')+'</span><button class="titem-del" onclick="event.stopPropagation();confirmDelTrade('+t.id+')">✕</button></div><div class="titem-expand" id="te-'+t.id+'">'+(t.ss?'<img src="'+t.ss+'" class="titem-ss" onclick="openLB(\''+t.ss+'\')" title="بزرگ نمایی">':'')+(t.tvlink?'<a href="'+t.tvlink+'" target="_blank" style="font-size:11px;color:var(--blue);display:block;margin-bottom:8px">🔗 TradingView</a>':'')+(t.setup||t.note?'<div class="titem-note">'+(t.setup?'<strong>ستاپ:</strong> '+t.setup+'<br>':'')+(t.note?t.note:'')+'</div>':'')+'<div class="titem-tags">'+(t.tf?'<span class="titem-tag">⏱ '+t.tf+'</span>':'')+(t.session?'<span class="titem-tag">🌍 '+(t.session==='eu'?'اروپا':t.session==='us'?'آمریکا':'آسیا')+'</span>':'')+(t.size?'<span class="titem-tag">💰 $'+t.size+'</span>':'')+(t.leverage&&t.leverage>1?'<span class="titem-tag">⚡ '+t.leverage+'x</span>':'')+'<span class="titem-tag" style="direction:ltr">'+(()=>{const td=new Date(t.date||t.created_at);if(isNaN(td.getTime()))return '—';return shamsiDate(td)+' • '+pad2(td.getHours())+':'+pad2(td.getMinutes())})()+'</span></div></div></div>'}).join('')}
 
 function togTItem(id){document.getElementById('ti-'+id).classList.toggle('open')}
 let pendingDelId=null;
 function confirmDelTrade(id){pendingDelId=id;document.getElementById('cm-icon').textContent='⚠️';document.getElementById('cm-title').textContent='حذف معامله؟';document.getElementById('cm-msg').textContent='این عمل غیرقابل بازگشت است.';document.getElementById('cm-confirm').textContent='حذف';document.getElementById('cm-confirm').className='modal-btn confirm';modalCb=()=>{delTrade(id)};document.getElementById('confirm-modal').classList.add('on')}
 async function delTrade(id){try{await api('/api/trades/'+id,{method:'DELETE'});localCache['_trades']=getTrades().filter(t=>t.id!==id);renderTradeList();renderTradeStats_small();toast('🗑 حذف شد','info')}catch(err){toast('❌ خطا: '+err.message,'error')}}
 
-function renderTradeStats_small(){const trades=getTrades();const wins=trades.filter(t=>t.result==='win').length;const losses=trades.filter(t=>t.result==='loss').length;const wr=trades.length?Math.round(wins/trades.length*100):0;const totalPnl=trades.reduce((s,t)=>s+t.pnl,0);const avgW=wins?trades.filter(t=>t.result==='win').reduce((s,t)=>s+t.pnl,0)/wins:0;const avgL=losses?Math.abs(trades.filter(t=>t.result==='loss').reduce((s,t)=>s+t.pnl,0)/losses):0;const winLossRatio=losses?(wins/losses).toFixed(1):wins?'∞':'0';const circ=2*Math.PI*36;const off=circ*(1-wr/100);const rc=wr>=60?'var(--green)':wr>=45?'var(--gold)':'var(--red)';document.getElementById('sp-overall').innerHTML='<div class="wr-wrap"><div class="wr-ring"><svg width="84" height="84" viewBox="0 0 84 84" style="transform:rotate(-90deg)"><circle cx="42" cy="42" r="36" fill="none" stroke="var(--dim)" stroke-width="8"/><circle cx="42" cy="42" r="36" fill="none" stroke="'+rc+'" stroke-width="8" stroke-dasharray="'+circ.toFixed(1)+'" stroke-dashoffset="'+(circ/4+off).toFixed(1)+'" stroke-linecap="round"/></svg><div class="wr-inner"><div class="wr-pct" style="color:'+rc+'">'+wr+'%</div><div class="wr-lbl">وین ریت</div></div></div><div class="wr-stats">'+[['کل معاملات',trades.length,'var(--text)'],['برنده',wins,'var(--green)'],['بازنده',losses,'var(--red)'],['PnL کل',(totalPnl>=0?'+':'')+totalPnl.toFixed(1)+'%',totalPnl>=0?'var(--green)':'var(--red)'],['پروفیت فاکتور',pf===999?'∞':pf.toFixed(2),pf>=1.5?'var(--green)':pf>=1?'var(--gold)':'var(--red)']].map(([k,v,c])=>'<div class="wr-row"><span class="wr-key">'+k+'</span><span class="wr-val" style="color:'+c+'">'+v+'</span></div>').join('')+'</div></div>';renderEquity(trades);renderHmap(trades);renderSessSmall(trades)}
+function renderTradeStats_small(){const trades=getTrades();const wins=trades.filter(t=>t.result==='win').length;const losses=trades.filter(t=>t.result==='loss').length;const wr=trades.length?Math.round(wins/trades.length*100):0;const totalPnl=trades.reduce((s,t)=>s+(t.rawpnl||0),0);const avgW=wins?trades.filter(t=>t.result==='win').reduce((s,t)=>s+(t.rawpnl||0),0)/wins:0;const avgL=losses?Math.abs(trades.filter(t=>t.result==='loss').reduce((s,t)=>s+(t.rawpnl||0),0)/losses):0;const pf=avgL?(avgW/avgL).toFixed(2):(wins?'∞':'—');const circ=2*Math.PI*36;const off=circ*(1-wr/100);const rc=wr>=60?'var(--green)':wr>=45?'var(--gold)':'var(--red)';document.getElementById('sp-overall').innerHTML='<div class="wr-wrap"><div class="wr-ring"><svg width="84" height="84" viewBox="0 0 84 84" style="transform:rotate(-90deg)"><circle cx="42" cy="42" r="36" fill="none" stroke="var(--dim)" stroke-width="8"/><circle cx="42" cy="42" r="36" fill="none" stroke="'+rc+'" stroke-width="8" stroke-dasharray="'+circ.toFixed(1)+'" stroke-dashoffset="'+(circ/4+off).toFixed(1)+'" stroke-linecap="round"/></svg><div class="wr-inner"><div class="wr-pct" style="color:'+rc+'">'+wr+'%</div><div class="wr-lbl">وین ریت</div></div></div><div class="wr-stats">'+[['کل معاملات',trades.length,'var(--text)'],['برنده',wins,'var(--green)'],['بازنده',losses,'var(--red)'],['PnL کل',(totalPnl>=0?'+':'')+'$'+totalPnl.toFixed(2),totalPnl>=0?'var(--green)':'var(--red)'],['پروفیت فاکتور',pf===999?'∞':pf,pf>=1.5?'var(--green)':pf>=1?'var(--gold)':'var(--red)']].map(([k,v,c])=>'<div class="wr-row"><span class="wr-key">'+k+'</span><span class="wr-val" style="color:'+c+'">'+v+'</span></div>').join('')+'</div></div>';renderEquity(trades);renderHmap(trades);renderSessSmall(trades)}
 
-function renderEquity(trades){const svg=document.getElementById('eq-svg');if(!svg)return;const sorted=[...trades].reverse();if(!sorted.length){svg.innerHTML='<text x="50%" y="50%" fill="var(--muted)" text-anchor="middle" font-size="12">داده‌ای نیست</text>';return}let cum=0;const pts=[0,...sorted.map(t=>{cum+=t.pnl;return cum})];const mx=Math.max(...pts,0.1),mn=Math.min(...pts,-0.1);const rng=mx-mn||1;const W=300,H=80;const px=i=>(i/(pts.length-1))*W;const py=v=>H-((v-mn)/rng)*(H-10)-5;const path=pts.map((v,i)=>(i===0?'M':'L')+px(i).toFixed(1)+','+py(v).toFixed(1)).join(' ');const areaPath=path+' L'+W+','+py(0).toFixed(1)+' L0,'+py(0).toFixed(1)+' Z';const lastPnl=pts[pts.length-1];const col=lastPnl>=0?'var(--green)':'var(--red)';svg.innerHTML='<defs><linearGradient id="eg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+col+'" stop-opacity=".2"/><stop offset="100%" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs><path d="'+areaPath+'" fill="url(#eg)"/><path d="'+path+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="'+px(pts.length-1)+'" cy="'+py(pts[pts.length-1])+'" r="3" fill="'+col+'"/>'}
+function renderEquity(trades){const svg=document.getElementById('eq-svg');if(!svg)return;const sorted=[...trades].reverse();if(!sorted.length){svg.innerHTML='<text x="50%" y="50%" fill="var(--muted)" text-anchor="middle" font-size="12">داده‌ای نیست</text>';return}let cum=0;const pts=[0,...sorted.map(t=>{cum+=t.rawpnl||0;return cum})];const mx=Math.max(...pts,0.1),mn=Math.min(...pts,-0.1);const rng=mx-mn||1;const W=300,H=80;const px=i=>(i/(pts.length-1))*W;const py=v=>H-((v-mn)/rng)*(H-10)-5;const path=pts.map((v,i)=>(i===0?'M':'L')+px(i).toFixed(1)+','+py(v).toFixed(1)).join(' ');const areaPath=path+' L'+W+','+py(0).toFixed(1)+' L0,'+py(0).toFixed(1)+' Z';const lastPnl=pts[pts.length-1];const col=lastPnl>=0?'var(--green)':'var(--red)';svg.innerHTML='<defs><linearGradient id="eg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+col+'" stop-opacity=".2"/><stop offset="100%" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs><path d="'+areaPath+'" fill="url(#eg)"/><path d="'+path+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="'+px(pts.length-1)+'" cy="'+py(pts[pts.length-1])+'" r="3" fill="'+col+'"/>'}
 
-function renderHmap(trades){const el=document.getElementById('hmap');if(!el)return;const map={};trades.forEach(t=>{const d=(t.date||t.created_at).split('T')[0];map[d]=(map[d]||0)+t.pnl});const days=[];const now=new Date();for(let i=27;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);days.push(d.toISOString().split('T')[0])}el.innerHTML=days.map(d=>{const v=map[d];const hv=v===undefined?0:v;const c=v===undefined?'var(--dim)':v>0?'rgba(0,214,143,'+(Math.min(Math.abs(v)/5,.8)+.15)+')':v<0?'rgba(239,68,68,'+(Math.min(Math.abs(v)/5,.8)+.15)+')':'var(--dim)';return'<div class="hmap-cell" style="background:'+c+'" title="'+d+': '+(v!==undefined?v.toFixed(2)+'%':'—')+'"></div>'}).join('')}
+function renderHmap(trades){
+  const el=document.getElementById('hmap');if(!el)return;
+  const map={};
+  trades.forEach(t=>{
+    const raw=t.date||t.created_at;if(!raw)return;
+    const d=new Date(raw);if(isNaN(d.getTime()))return;
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    map[key]=(map[key]||0)+(t.rawpnl||0);
+  });
+  const now=new Date();now.setHours(0,0,0,0);
+  // Build a 6-week (42 days) grid ending today; columns = weeks, rows = days-of-week (sat top)
+  const DAYS=42;
+  const start=new Date(now);start.setDate(now.getDate()-(DAYS-1));
+  // Adjust so first column starts on Saturday
+  const startDow=(start.getDay()+1)%7;
+  start.setDate(start.getDate()-startDow);
+  const cells=[];
+  const cur=new Date(start);
+  while(cur<=now){
+    const key=cur.getFullYear()+'-'+String(cur.getMonth()+1).padStart(2,'0')+'-'+String(cur.getDate()).padStart(2,'0');
+    const v=map[key];
+    cells.push({d:new Date(cur),v});
+    cur.setDate(cur.getDate()+1);
+  }
+  // Find max abs for scaling
+  const mx=Math.max(...cells.filter(c=>c.v!==undefined).map(c=>Math.abs(c.v)),1);
+  // Build by-week columns: each week = 7 cells starting Sat
+  const weeks=[];
+  for(let i=0;i<cells.length;i+=7)weeks.push(cells.slice(i,i+7));
+  let html='<div class="hmap-wrap">';
+  html+='<div class="hmap-days">'+DAYS_SH.map(d=>'<div>'+d+'</div>').join('')+'</div>';
+  html+='<div class="hmap-cols">';
+  weeks.forEach(w=>{
+    html+='<div class="hmap-col">';
+    w.forEach(cell=>{
+      if(!cell){html+='<div class="hmap-cell empty"></div>';return}
+      const v=cell.v;
+      let bg='var(--dim)',col='var(--muted)';
+      if(v!==undefined){
+        const intensity=Math.min(Math.abs(v)/mx,1)*0.7+0.25;
+        if(v>0){bg='rgba(0,214,143,'+intensity+')';col='var(--green)'}
+        else if(v<0){bg='rgba(239,68,68,'+intensity+')';col='var(--red)'}
+        else{bg='var(--s3)'}
+      }
+      const ds=cell.d;
+      const j=gregorianToJalali(ds.getFullYear(),ds.getMonth()+1,ds.getDate());
+      const mNames=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+      const title=toFa(j[2])+' '+mNames[j[1]-1]+(v!==undefined?': '+(v>=0?'+':'')+'$'+v.toFixed(2):' — بدون معامله');
+      html+='<div class="hmap-cell" style="background:'+bg+'" title="'+title+'"></div>';
+    });
+    html+='</div>';
+  });
+  html+='</div></div>';
+  // Total summary
+  const totalDays=Object.keys(map).length;
+  const positiveDays=Object.values(map).filter(v=>v>0).length;
+  const negativeDays=Object.values(map).filter(v=>v<0).length;
+  html+='<div style="display:flex;gap:10px;justify-content:space-around;margin-top:10px;font-size:11px;color:var(--muted);flex-wrap:wrap"><span><span style="color:var(--green)">●</span> '+toFa(positiveDays)+' روز سبز</span><span><span style="color:var(--red)">●</span> '+toFa(negativeDays)+' روز قرمز</span><span>📅 '+toFa(totalDays)+' روز فعال</span></div>';
+  el.innerHTML=html;
+}
 
 function renderSessSmall(trades){const el=document.getElementById('sess-bars');if(!el)return;const sess={eu:{w:0,t:0},us:{w:0,t:0},asia:{w:0,t:0}};trades.forEach(t=>{if(sess[t.session]){sess[t.session].t++;if(t.result==='win')sess[t.session].w++}});const names={eu:'اروپا',us:'آمریکا',asia:'آسیا'};const colors={eu:'#3b82f6',us:'#f0b429',asia:'#a78bfa'};el.innerHTML=Object.entries(sess).map(([k,v])=>{const wr=v.t?Math.round(v.w/v.t*100):0;return'<div class="sess-row"><span class="sess-name">'+names[k]+'</span><div class="sess-bar-w"><div class="sess-bar-f" style="width:'+wr+'%;background:'+colors[k]+'"></div></div><span class="sess-val" style="color:'+colors[k]+'">'+wr+'%</span><span style="font-size:10px;color:var(--muted)">('+v.t+')</span></div>'}).join('')}
 
-function renderTradeStats(){const trades=getTrades();const wins=trades.filter(t=>t.result==='win');const losses=trades.filter(t=>t.result==='loss');const wr=trades.length?Math.round(wins.length/trades.length*100):0;const totalPnl=trades.reduce((s,t)=>s+t.pnl,0);const avgW=wins.length?wins.reduce((s,t)=>s+t.pnl,0)/wins.length:0;const avgL=losses.length?Math.abs(losses.reduce((s,t)=>s+t.pnl,0)/losses.length):0;const winLossRatio=losses.length?(wins.length/losses.length).toFixed(1):wins.length?'∞':'0';document.getElementById('trade-kpis').innerHTML=[{c:'var(--green)',v:wr+'%',l:'وین ریت',s:wins.length+'W / '+losses.length+'L'},{c:'var(--gold)',v:(totalPnl>=0?'+':'')+totalPnl.toFixed(1)+'%',l:'PnL کل',s:trades.length+' معامله'},{c:'var(--blue)',v:pf===999?'∞':pf.toFixed(2),l:'پروفیت فاکتور',s:'بالای 1.5'},{c:'var(--purple)',v:avgW.toFixed(1)+'%',l:'میانگین برد',s:'میانگین باخت: '+avgL.toFixed(1)+'%'}].map(s=>'<div class="sc sc-glow" style="--c:'+s.c+'"><div class="sval">'+s.v+'</div><div class="slbl">'+s.l+'</div><div class="ssub">'+s.s+'</div></div>').join('');const sorted=[...trades].reverse();const pnlEl=document.getElementById('pnl-chart-wrap');if(sorted.length){const vals=sorted.map(t=>t.pnl);const mx=Math.max(...vals.map(Math.abs),.1);pnlEl.innerHTML='<div class="bchart" style="height:100px">'+sorted.map(t=>{const pct=Math.abs(t.pnl)/mx*100;const pos=t.pnl>=0;return'<div class="bg-group"><div class="bg-wrap"><div class="bg-bar" style="height:'+pct+'%;background:'+(pos?'var(--green)':'var(--red)')+';opacity:.8" data-v="'+(t.pnl>0?'+':'')+t.pnl+'%"></div></div><div class="bg-lbl" style="font-size:10px">'+t.coin+'</div></div>'}).join('')+'</div>'}else pnlEl.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px;font-size:12px">داده‌ای نیست</div>';const setupMap={};trades.forEach(t=>{if(t.setup){const s=t.setup.substring(0,20);setupMap[s]=setupMap[s]||{w:0,t:0};setupMap[s].t++;if(t.result==='win')setupMap[s].w++}});document.getElementById('setup-stats').innerHTML=Object.entries(setupMap).sort((a,b)=>b[1].t-a[1].t).slice(0,5).map(([k,v])=>{const wr=v.t?Math.round(v.w/v.t*100):0;return'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:12px;flex:1">'+k+'</span><span style="font-size:12px;font-weight:700;color:'+(wr>=60?'var(--green)':wr>=40?'var(--gold)':'var(--red)')+'">'+wr+'%</span><span style="font-size:10px;color:var(--muted)">('+v.t+')</span></div>'}).join('')||'<div style="text-align:center;color:var(--muted);font-size:12px">داده‌ای نیست</div>';const tfMap={};trades.forEach(t=>{if(t.tf){tfMap[t.tf]=tfMap[t.tf]||{w:0,t:0};tfMap[t.tf].t++;if(t.result==='win')tfMap[t.tf].w++}});document.getElementById('tf-stats').innerHTML=Object.entries(tfMap).sort((a,b)=>b[1].t-a[1].t).slice(0,5).map(([k,v])=>{const wr=v.t?Math.round(v.w/v.t*100):0;return'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:12px;flex:1">'+k+'</span><span style="font-size:12px;font-weight:700;color:'+(wr>=60?'var(--green)':wr>=40?'var(--gold)':'var(--red)')+'">'+wr+'%</span><span style="font-size:10px;color:var(--muted)">('+v.t+')</span></div>'}).join('')||'<div style="text-align:center;color:var(--muted);font-size:12px">داده‌ای نیست</div>';const sessMap={eu:{w:0,t:0},us:{w:0,t:0},asia:{w:0,t:0}};trades.forEach(t=>{if(sessMap[t.session]){sessMap[t.session].t++;if(t.result==='win')sessMap[t.session].w++}});const names={eu:'اروپا',us:'آمریکا',asia:'آسیا'};document.getElementById('sess-stats').innerHTML=Object.entries(sessMap).map(([k,v])=>{const wr=v.t?Math.round(v.w/v.t*100):0;return'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:12px;flex:1">'+names[k]+'</span><span style="font-size:12px;font-weight:700;color:'+(wr>=60?'var(--green)':wr>=40?'var(--gold)':'var(--red)')+'">'+wr+'%</span><span style="font-size:10px;color:var(--muted)">('+v.t+')</span></div>'}).join('')}
+function renderTradeStats(){const trades=getTrades();const wins=trades.filter(t=>t.result==='win');const losses=trades.filter(t=>t.result==='loss');const wr=trades.length?Math.round(wins.length/trades.length*100):0;const totalPnl=trades.reduce((s,t)=>s+(t.rawpnl||0),0);const avgW=wins.length?wins.reduce((s,t)=>s+(t.rawpnl||0),0)/wins.length:0;const avgL=losses.length?Math.abs(losses.reduce((s,t)=>s+(t.rawpnl||0),0)/losses.length):0;const pf=avgL?(avgW/avgL).toFixed(2):(wins.length?'∞':'—');document.getElementById('trade-kpis').innerHTML=[{c:'var(--green)',v:wr+'%',l:'وین ریت',s:wins.length+'W / '+losses.length+'L'},{c:'var(--gold)',v:(totalPnl>=0?'+':'')+'$'+totalPnl.toFixed(2),l:'PnL کل',s:trades.length+' معامله'},{c:'var(--blue)',v:pf===999?'∞':pf,l:'پروفیت فاکتور',s:'بالای 1.5'},{c:'var(--purple)',v:'$'+avgW.toFixed(2),l:'میانگین برد',s:'میانگین باخت: $'+avgL.toFixed(2)}].map(s=>'<div class="sc sc-glow" style="--c:'+s.c+'"><div class="sval">'+s.v+'</div><div class="slbl">'+s.l+'</div><div class="ssub">'+s.s+'</div></div>').join('');const sorted=[...trades].reverse();const pnlEl=document.getElementById('pnl-chart-wrap');if(sorted.length){const vals=sorted.map(t=>t.rawpnl||0);const mx=Math.max(...vals.map(Math.abs),.1);pnlEl.innerHTML='<div class="bchart" style="height:100px">'+sorted.map(t=>{const rp=t.rawpnl||0;const pct=Math.abs(rp)/mx*100;const pos=rp>=0;return'<div class="bg-group"><div class="bg-wrap"><div class="bg-bar" style="height:'+pct+'%;background:'+(pos?'var(--green)':'var(--red)')+';opacity:.8" data-v="'+(rp>0?'+':'')+'$'+rp.toFixed(2)+'"></div></div><div class="bg-lbl" style="font-size:10px">'+t.coin+'</div></div>'}).join('')+'</div>'}else pnlEl.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px;font-size:12px">داده‌ای نیست</div>';const setupMap={};trades.forEach(t=>{if(t.setup){const s=t.setup.substring(0,20);setupMap[s]=setupMap[s]||{w:0,t:0};setupMap[s].t++;if(t.result==='win')setupMap[s].w++}});document.getElementById('setup-stats').innerHTML=Object.entries(setupMap).sort((a,b)=>b[1].t-a[1].t).slice(0,5).map(([k,v])=>{const wr=v.t?Math.round(v.w/v.t*100):0;return'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:12px;flex:1">'+k+'</span><span style="font-size:12px;font-weight:700;color:'+(wr>=60?'var(--green)':wr>=40?'var(--gold)':'var(--red)')+'">'+wr+'%</span><span style="font-size:10px;color:var(--muted)">('+v.t+')</span></div>'}).join('')||'<div style="text-align:center;color:var(--muted);font-size:12px">داده‌ای نیست</div>';const tfMap={};trades.forEach(t=>{if(t.tf){tfMap[t.tf]=tfMap[t.tf]||{w:0,t:0};tfMap[t.tf].t++;if(t.result==='win')tfMap[t.tf].w++}});document.getElementById('tf-stats').innerHTML=Object.entries(tfMap).sort((a,b)=>b[1].t-a[1].t).slice(0,5).map(([k,v])=>{const wr=v.t?Math.round(v.w/v.t*100):0;return'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:12px;flex:1">'+k+'</span><span style="font-size:12px;font-weight:700;color:'+(wr>=60?'var(--green)':wr>=40?'var(--gold)':'var(--red)')+'">'+wr+'%</span><span style="font-size:10px;color:var(--muted)">('+v.t+')</span></div>'}).join('')||'<div style="text-align:center;color:var(--muted);font-size:12px">داده‌ای نیست</div>';const sessMap={eu:{w:0,t:0},us:{w:0,t:0},asia:{w:0,t:0}};trades.forEach(t=>{if(sessMap[t.session]){sessMap[t.session].t++;if(t.result==='win')sessMap[t.session].w++}});const names={eu:'اروپا',us:'آمریکا',asia:'آسیا'};document.getElementById('sess-stats').innerHTML=Object.entries(sessMap).map(([k,v])=>{const wr=v.t?Math.round(v.w/v.t*100):0;return'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:12px;flex:1">'+names[k]+'</span><span style="font-size:12px;font-weight:700;color:'+(wr>=60?'var(--green)':wr>=40?'var(--gold)':'var(--red)')+'">'+wr+'%</span><span style="font-size:10px;color:var(--muted)">('+v.t+')</span></div>'}).join('')}
 
 // MODAL
 function closeModal(){document.getElementById('confirm-modal').classList.remove('on');modalCb=null}
