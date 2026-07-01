@@ -1,20 +1,19 @@
-# TahaEth Pro Dashboard
+# ⚡ TahaEth Pro Dashboard
 
-داشبورد شخصی مدیریت روزانه — ترید، باشگاه، تغذیه، AI و ژورنال.
+داشبورد شخصی مدیریت روزانه — ترید، باشگاه، تغذیه، AI و ژورنال.  
+همه‌چیز توی یک فایل HTML (SPA) با بک‌اند Node.js + SQLite.
 
-## امکانات
+## ✨ امکانات
 
-- 📊 **نمای کلی** — ردیابی هفتگی، نمودار تکمیل، توزیع فعالیت، استریک‌ها
-- 📅 **برنامه روزانه** — بلاک‌های زمانی با قابلیت ویرایش، حالت استراحت
-- 🥗 **تغذیه** — برنامه غذایی باشگاه و استراحت با ماکروها
-- 📝 **ژورنال** — یادداشت روزانه، چک‌لیست، حال روز
-- 📈 **ترید** — ثبت معاملات، آمار وین ریت، نمودار PnL، هیت‌مپ، عملکرد سشن
-- 🌗 **تم تاریک و روشن**
-- 📱 **ریسپانسیو** — مناسب گوشی و دسکتاپ
-- 🔄 **تقویم شمسی**
-- 📤 **خروجی JSON و CSV**
+| بخش | توضیح |
+|------|-------|
+| **📊 نمای کلی** | ردیابی هفتگی، نمودار تکمیل روزانه، دونات توزیع فعالیت، استریک‌ها، تقویم ماهانه شمسی |
+| **📅 برنامه** | بلاک‌های زمانی قابل ویرایش، حالت استراحت، رینگ پیشرفت، ژورنال روزانه + چک‌لیست |
+| **🥗 تغذیه** | برنامه غذایی باشگاه/استراحت، ماکروها، کالری، نکات ریکامپ |
+| **📈 ترید** | ثبت معامله با اسکرین‌شات، آمار وین‌ریت، منحنی سرمایه، هیت‌مپ PnL، عملکرد سشن |
+| **🌗 تم تاریک/روشن** | + خروجی JSON و CSV |
 
-## نصب سریع
+## 🚀 نصب سریع
 
 ```bash
 git clone https://github.com/TahaT80/Dashboard-todo-and-trade-journal.git
@@ -23,135 +22,62 @@ npm install
 npm start
 ```
 
-برنامه روی `http://localhost:3000` اجرا میشه.
+برنامه روی `http://localhost:3000` اجرا میشه.  
+حساب کاربری اول رو تو صفحه لاگین میسازی.
 
-## تکنولوژی‌ها
+## 📦 تکنولوژی‌ها
 
-- **Backend:** Node.js + Express + SQLite (sql.js)
-- **Frontend:** HTML/CSS/JS (Vanilla SPA)
-- **Auth:** JWT + bcrypt
-- **Font:** Vazirmatn + JetBrains Mono
+- **بک‌اند:** Node.js + Express + SQLite (sql.js)
+- **فرانت‌اند:** Vanilla JS — بدون فریم‌ورک، یک فایل HTML
+- **احراز هویت:** JWT + bcrypt
+- **فونت:** Vazirmatn + JetBrains Mono
 
-## ساختار پروژه
+## 📁 ساختار پروژه
 
 ```
-├── server.js          # سرور Express + SQLite
-├── package.json       # پکیج‌ها
-├── public/
-│   └── index.html     # فرانت‌اند (SPA)
+├── server.js          # سرور Express + API
+├── package.json
+├── .env.example       # نمونه متغیرهای محیطی
 ├── .gitignore
+├── public/
+│   └── index.html     # کل فرانت‌اند (SPA)
 └── README.md
 ```
 
----
+## 🔧 استقرار روی سرور (Linux + PM2 + Nginx)
 
-# 🚀 راهنمای نصب روی سرور لینوکس
-
-## پیش‌نیازها
-- سرور لینوکس (Ubuntu 20.04+ / Debian 11+)
-- دسترسی root یا sudo
-- دامنه (اختیاری ولی پیشنهادی)
-
----
-
-## مرحله ۱: نصب Node.js
-
+### ۱. نصب Node.js
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt install -y nodejs
-
-node -v
-npm -v
 ```
 
----
-
-## مرحله ۲: آپلود فایل‌ها
-
+### ۲. آپلود و نصب
 ```bash
-sudo mkdir -p /var/www/tahaeth
-sudo chown $USER:$USER /var/www/tahaeth
-
-# روش ۱: با scp
-scp -r /path/to/web/* user@server-ip:/var/www/tahaeth/
-
-# روش ۲: با git
-cd /var/www/tahaeth
-git clone https://github.com/TahaT80/Dashboard-todo-and-trade-journal.git .
-
-# روش ۳: آپلود دستی با FileZilla یا WinSCP
-```
-
----
-
-## مرحله ۳: نصب پکیج‌ها
-
-```bash
+git clone https://github.com/TahaT80/Dashboard-todo-and-trade-journal.git /var/www/tahaeth
 cd /var/www/tahaeth
 npm install
+cp .env.example .env
+nano .env   # JWT_SECRET رو تغییر بده
 ```
 
----
-
-## مرحله ۴: تنظیم متغیرهای محیطی
-
+### ۳. اجرای همیشگی با PM2
 ```bash
-nano /var/www/tahaeth/.env
-```
-
-محتوای فایل:
-```env
-PORT=3000
-JWT_SECRET=یک-رمز-طولانی-و-تصادفی-اینجا-بنویس
-```
-
-> حتماً یک رمز قوی و تصادفی برای `JWT_SECRET` انتخاب کن.
-
----
-
-## مرحله ۵: تست اجرای برنامه
-
-```bash
-cd /var/www/tahaeth
-node server.js
-```
-
-اگه پیام `🚀 TahaEth Pro running on http://localhost:3000` رو دیدی، یعنی درسته.
-
----
-
-## مرحله ۶: راه‌اندازی با PM2
-
-```bash
-sudo npm install -g pm2
-
-cd /var/www/tahaeth
+npm install -g pm2
 pm2 start server.js --name tahaeth
-
-pm2 startup
-pm2 save
-
-# دستورات مفید
-pm2 status
-pm2 logs tahaeth
-pm2 restart tahaeth
+pm2 startup && pm2 save
 ```
 
----
-
-## مرحله ۷: نصب Nginx
-
+### ۴. نصب Nginx + SSL
 ```bash
-sudo apt install -y nginx
-sudo nano /etc/nginx/sites-available/tahaeth
+sudo apt install -y nginx certbot python3-certbot-nginx
 ```
 
-محتوا:
+فایل `/etc/nginx/sites-available/tahaeth`:
 ```nginx
 server {
     listen 80;
     server_name your-domain.com;
-
     location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
@@ -169,55 +95,28 @@ server {
 ```bash
 sudo ln -s /etc/nginx/sites-available/tahaeth /etc/nginx/sites-enabled/
 sudo rm /etc/nginx/sites-enabled/default
-sudo nginx -t
-sudo systemctl restart nginx
-sudo systemctl enable nginx
-```
+sudo nginx -t && sudo systemctl restart nginx
 
----
-
-## مرحله ۸: تنظیم فایروال
-
-```bash
-sudo ufw allow OpenSSH
-sudo ufw allow 'Nginx Full'
-sudo ufw enable
-```
-
----
-
-## مرحله ۹: SSL رایگان با Let's Encrypt
-
-```bash
-sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d your-domain.com
-sudo certbot renew --dry-run
 ```
 
----
-
-## مرحله ۱۰: بکاپ دیتابیس
-
+### ۵. بکاپ دیتابیس
 ```bash
-mkdir -p /var/www/tahaeth/backups
-
-# بکاپ دستی
-cp /var/www/tahaeth/data.db /var/www/tahaeth/data.db.backup-$(date +%Y%m%d)
-
-# بکاپ خودکار روزانه
-crontab -e
-# اضافه کردن:
 0 3 * * * cp /var/www/tahaeth/data.db /var/www/tahaeth/backups/data-$(date +\%Y\%m\%d).db
 ```
 
----
+## 🔐 متغیرهای محیطی
 
-## عیب‌یابی
+| متغیر | پیش‌فرض | توضیح |
+|-------|---------|-------|
+| `PORT` | `3000` | پورت سرور |
+| `JWT_SECRET` | — | کلید امضای توکن (توی production حتماً عوض کن) |
 
-| مشکل | راه حل |
-|-------|--------|
-| پورت 3000 بسته‌ست | `sudo ufw allow 3000` |
-| Nginx 502 Bad Gateway | `pm2 status` |
-| دیتابیس قفل شده | `pm2 restart tahaeth` |
-| SSL کار نمیکنه | `sudo certbot renew` |
-| لاگ خطا | `pm2 logs tahaeth --err` |
+## 🛠 عیب‌یابی
+
+| مشکل | راه‌حل |
+|------|--------|
+| پورت ۳۰۰۰ بسته | `sudo ufw allow 3000` |
+| Nginx 502 | `pm2 status` چک کن |
+| SSL کار نمی‌کنه | `sudo certbot renew` |
+| خطا در لاگ | `pm2 logs tahaeth --err` |
